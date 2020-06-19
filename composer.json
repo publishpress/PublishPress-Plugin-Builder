@@ -1,0 +1,21 @@
+{
+    "name": "publishpress/wordpress-plugin-builder",
+    "description": "Robo tasks for building WordPress plugins",
+    "type": "library",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "PublishPress",
+            "email": "help@publishpress.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "autoload": {
+        "psr-4": {
+            "PublishPressBuilder\\": "src/"
+        }
+    },
+    "require": {
+        "consolidation/robo": "^2.1"
+    }
+}
