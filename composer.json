@@ -17,7 +17,8 @@
     },
     "require": {
         "php": "~7.3",
-        "consolidation/robo": "^2.1"
+        "consolidation/robo": "^2.1",
+        "nelexa/zip": "^3.3"
     },
     "require-dev": {
         "codeception/codeception": "^4.1",

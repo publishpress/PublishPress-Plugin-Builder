@@ -104,12 +104,18 @@ class PackageBuilderTasksCest
 
         $unzippedPath = $sourcePath . '/dist/unzipped';
 
+        $zip = new \PhpZip\ZipFile();
         try {
-            $zip = new ZipArchive();
-            $zip->open($sourcePath . '/dist/publishpress-dummy-2.0.4.zip');
+            if (!file_exists($unzippedPath)) {
+                mkdir($unzippedPath);
+            }
+
+            $zip->openFile($sourcePath . '/dist/publishpress-dummy-2.0.4.zip');
             $zip->extractTo($unzippedPath);
         } catch (Exception $e) {
             $I->fail($e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
+        } finally {
+            $zip->close();
         }
 
         foreach ($this->filesToIgnore as $fileToIgnore) {
