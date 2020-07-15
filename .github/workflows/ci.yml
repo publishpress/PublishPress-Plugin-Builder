@@ -1,0 +1,13 @@
+name: "CI"
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Tests
+        uses: "joelwmale/codeception-action@master@104032c6a73aa7f1ad17dc81a9eebf7d122d76b6"

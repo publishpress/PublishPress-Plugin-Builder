@@ -22,25 +22,9 @@
 
 namespace PublishPressBuilder;
 
-class Utils
+class PluginFileReader
 {
-    public function getPluginNameFromComposerFile($projectPath): string
-    {
-        $composerFileJson = trim(file_get_contents($projectPath . '/composer.json'));
-        $composerFileJson = json_decode($composerFileJson);
-
-        $pluginName = explode('/', $composerFileJson->name);
-
-        if (count($pluginName) > 1) {
-            $pluginName = $pluginName[count($pluginName) - 1];
-        } else {
-            $pluginName = $pluginName[0];
-        }
-
-        return $pluginName;
-    }
-
-    public function getPluginVersionFromPluginFile($pluginFilePath): string
+    public function getPluginVersion(string $pluginFilePath): string
     {
         $pluginFileContent = trim(file_get_contents($pluginFilePath));
 
