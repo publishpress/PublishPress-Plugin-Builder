@@ -89,13 +89,18 @@ class PackageBuilderTasksCest
 
     public function testBuildTask_ShouldCreateAZipFileInTheDistDirNamedWithPluginNameAndVersion(UnitTester $I)
     {
-        $I->wantToTest('the build task with no custom destination, should create a ZIP file in the ./dist dir with the plugin name and version');
+        $I->wantToTest(
+            'the build task with no custom destination, should create a ZIP file in the ./dist dir with the plugin name and version'
+        );
 
         $sourcePath = __DIR__ . '/../_data/build-test';
 
-        $this->callRoboCommand('build', $sourcePath);
+        $this->callRoboCommand('build', realpath($sourcePath));
 
-        $I->assertFileExists($sourcePath . '/dist/publishpress-dummy-2.0.4.zip');
+        $I->assertFileExists(
+            realpath($sourcePath . '/dist/publishpress-dummy-2.0.4.zip'),
+            'There should be a ZIP file in the path ' . $sourcePath
+        );
     }
 
     public function testBuildTask_ShouldCreateZipFileWithNoIgnoredFiles(UnitTester $I)
@@ -124,18 +129,24 @@ class PackageBuilderTasksCest
 
         foreach ($this->filesToIgnore as $fileToIgnore) {
             $filePath = $unzippedPath . '/publishpress-dummy/' . $fileToIgnore;
-            $I->assertFileDoesNotExist($filePath);
+            $I->assertFileDoesNotExist($filePath, 'The file ' . $filePath . ' should not exist in the package');
         }
     }
 
-    public function testBuildTask_WithCustomDestination_ShouldCreateAZipFileInTheSpecificDirNamedWithPluginNameAndVersion(UnitTester $I)
-    {
-        $I->wantToTest('the build task with a custom destination, should create a ZIP file in the specific dir with the plugin name and version');
+    public function testBuildTask_WithCustomDestination_ShouldCreateAZipFileInTheSpecificDirNamedWithPluginNameAndVersion(
+        UnitTester $I
+    ) {
+        $I->wantToTest(
+            'the build task with a custom destination, should create a ZIP file in the specific dir with the plugin name and version'
+        );
 
         $sourcePath = __DIR__ . '/../_data/build-move-test';
 
-        $this->callRoboCommand('build', $sourcePath);
+        $this->callRoboCommand('build', realpath($sourcePath));
 
-        $I->assertFileExists($sourcePath . '/../../_output/publishpress-dummy-2.0.4.zip');
+        $I->assertFileExists(
+            realpath($sourcePath . '/../../_output/publishpress-dummy-2.0.4.zip'),
+            'There should be a zip file in the path ' . $sourcePath
+        );
     }
 }
