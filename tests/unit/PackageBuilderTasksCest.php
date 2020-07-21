@@ -89,6 +89,8 @@ class PackageBuilderTasksCest
 
     public function testBuildTask_ShouldCreateAZipFileInTheDistDirNamedWithPluginNameAndVersion(UnitTester $I)
     {
+        $I->wantToTest('the build task with no custom destination, should create a ZIP file in the ./dist dir with the plugin name and version');
+
         $sourcePath = __DIR__ . '/../_data/build-test';
 
         $this->callRoboCommand('build', $sourcePath);
@@ -98,6 +100,8 @@ class PackageBuilderTasksCest
 
     public function testBuildTask_ShouldCreateZipFileWithNoIgnoredFiles(UnitTester $I)
     {
+        $I->wantToTest('the build task with no custom destination, should create a ZIP file without any ignore file');
+
         $sourcePath = __DIR__ . '/../_data/build-test';
 
         $this->callRoboCommand('build', $sourcePath);
@@ -122,5 +126,16 @@ class PackageBuilderTasksCest
             $filePath = $unzippedPath . '/publishpress-dummy/' . $fileToIgnore;
             $I->assertFileDoesNotExist($filePath);
         }
+    }
+
+    public function testBuildTask_WithCustomDestination_ShouldCreateAZipFileInTheSpecificDirNamedWithPluginNameAndVersion(UnitTester $I)
+    {
+        $I->wantToTest('the build task with a custom destination, should create a ZIP file in the specific dir with the plugin name and version');
+
+        $sourcePath = __DIR__ . '/../_data/build-move-test';
+
+        $this->callRoboCommand('build', $sourcePath);
+
+        $I->assertFileExists($sourcePath . '/../../_output/publishpress-dummy-2.0.4.zip');
     }
 }

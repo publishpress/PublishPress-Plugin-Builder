@@ -22,6 +22,8 @@
 
 namespace PublishPressBuilder;
 
+use Symfony\Component\Yaml\Yaml;
+
 abstract class PackageBuilderTasks extends \Robo\Tasks
 {
     const DIST_DIR_NAME = 'dist';
@@ -70,8 +72,15 @@ abstract class PackageBuilderTasks extends \Robo\Tasks
      */
     public function __construct()
     {
-        $this->sourcePath      = getcwd();
+        $this->sourcePath = getcwd();
+
         $this->destinationPath = $this->sourcePath . '/' . self::DIST_DIR_NAME;
+        if ($this->envFileExists()) {
+            $builderEnv = Yaml::parseFile($this->getEnvFilePath());
+            if (isset($builderEnv['destination'])) {
+                $this->destinationPath = realpath($builderEnv['destination']);
+            }
+        }
 
         $this->composerFileReader = new ComposerFileReader();
         $this->pluginFileReader   = new PluginFileReader();
@@ -80,6 +89,16 @@ abstract class PackageBuilderTasks extends \Robo\Tasks
         $this->pluginVersion = $this->pluginFileReader->getPluginVersion(
             $this->sourcePath . '/' . $this->pluginName . '.php'
         );
+    }
+
+    private function getEnvFilePath()
+    {
+        return $this->sourcePath . '/builder.env';
+    }
+
+    private function envFileExists()
+    {
+        return file_exists($this->getEnvFilePath());
     }
 
     private function sayTitle(): void
