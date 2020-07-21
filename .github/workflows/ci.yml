@@ -13,4 +13,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: php-actions/composer@v1
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v2
       - uses: joelwmale/codeception-action@104032c6a73aa7f1ad17dc81a9eebf7d122d76b6
