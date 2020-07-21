@@ -22,7 +22,7 @@
 
 namespace PublishPressBuilder;
 
-use Symfony\Component\Yaml\Yaml;
+use Symfony\Component\Yaml\Parser;
 
 abstract class PackageBuilderTasks extends \Robo\Tasks
 {
@@ -68,15 +68,23 @@ abstract class PackageBuilderTasks extends \Robo\Tasks
     private $filesToIgnore = [];
 
     /**
+     * @var Parser
+     */
+    private $yamlParser = null;
+
+    /**
      * PackageBuilderTasks constructor.
+     *
+     *
      */
     public function __construct()
     {
         $this->sourcePath = getcwd();
+        $this->yamlParser = new Parser();
 
         $this->destinationPath = $this->sourcePath . '/' . self::DIST_DIR_NAME;
         if ($this->envFileExists()) {
-            $builderEnv = Yaml::parseFile($this->getEnvFilePath());
+            $builderEnv = $this->yamlParser->parseFile($this->getEnvFilePath());
             if (isset($builderEnv['destination'])) {
                 $this->destinationPath = realpath($builderEnv['destination']);
             }
@@ -128,25 +136,25 @@ abstract class PackageBuilderTasks extends \Robo\Tasks
             $this->pluginVersion
         );
 
-        $destinationPath = $this->destinationPath . '/' . $this->pluginName;
-        $this->_mirrorDir($this->sourcePath, $destinationPath);
+        $fullDestinationPath = $this->destinationPath . '/' . $this->pluginName;
+        $this->_mirrorDir($this->sourcePath, $fullDestinationPath);
 
-        $this->removeIgnoredFiles($destinationPath);
+        $this->removeIgnoredFiles($fullDestinationPath);
 
         $this->taskPack($zipPath)
-             ->add([$this->pluginName => $destinationPath])
+             ->add([$this->pluginName => $fullDestinationPath])
              ->run();
     }
 
     private function removeIgnoredFiles($dirPath): void
     {
-        $filesToIgnore = $this->getListOfFilesToIgnore();
+        $listOfFilesToIgnore = $this->getListOfFilesToIgnore();
 
-        if (empty($filesToIgnore)) {
+        if (empty($listOfFilesToIgnore)) {
             return;
         }
 
-        foreach ($filesToIgnore as $file) {
+        foreach ($listOfFilesToIgnore as $file) {
             $path = $dirPath . '/' . $file;
             if (file_exists($path)) {
                 $this->_remove($path);
@@ -158,9 +166,10 @@ abstract class PackageBuilderTasks extends \Robo\Tasks
     {
         if (file_exists($this->destinationPath)) {
             $this->_cleanDir($this->destinationPath);
-        } else {
-            $this->_mkdir($this->destinationPath);
+            return;
         }
+
+        $this->_mkdir($this->destinationPath);
     }
 
     private function getListOfFilesToIgnore(): array

@@ -28,6 +28,7 @@ class PluginFileReader
     {
         $pluginFileContent = trim(file_get_contents($pluginFilePath));
 
+        $matches = [];
         preg_match('/Version:\s*([0-9\.a-z\-]*)/i', $pluginFileContent, $matches);
 
         return $matches[1];

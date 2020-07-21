@@ -121,5 +121,10 @@ class PackageBuilderTasksCest
 
         $filePath = $unzippedPath . '/publishpress-dummy/invalidfile2.txt';
         $I->assertFileDoesNotExist($filePath, 'The robo script should be ignoring the file invalidfile2.txt');
+
+        foreach ($this->filesToIgnore as $fileToIgnore) {
+            $filePath = $unzippedPath . '/publishpress-dummy/' . $fileToIgnore;
+            $I->assertFileDoesNotExist($filePath, 'The file ' . $filePath . ' should not exist in the package');
+        }
     }
 }
