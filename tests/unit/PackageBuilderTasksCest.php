@@ -149,4 +149,38 @@ class PackageBuilderTasksCest
             'There should be a zip file in the path ' . $sourcePath
         );
     }
+
+    public function testBuildTask_WithCustomFilesToIgnore_ShouldCreateAZipFileWithoutTheIgnoredFiles(
+        UnitTester $I
+    ) {
+        $I->wantToTest(
+            'the build task with a custom list of files to ignore, should create a ZIP file without the ignored files'
+        );
+
+        $sourcePath = __DIR__ . '/../_data/build-ignoring-test';
+
+        $this->callRoboCommand('build', realpath($sourcePath));
+
+        $unzippedPath = $sourcePath . '/dist/unzipped';
+
+        $zip = new \PhpZip\ZipFile();
+        try {
+            if (!file_exists($unzippedPath)) {
+                mkdir($unzippedPath);
+            }
+
+            $zip->openFile($sourcePath . '/dist/publishpress-dummy-2.0.4.zip');
+            $zip->extractTo($unzippedPath);
+        } catch (Exception $e) {
+            $I->fail($e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
+        } finally {
+            $zip->close();
+        }
+
+        $filePath = $unzippedPath . '/publishpress-dummy/invalidfile1.txt';
+        $I->assertFileDoesNotExist($filePath, 'The robo script should be ignorign the file invalidfile1.txt');
+
+        $filePath = $unzippedPath . '/publishpress-dummy/invalidfile2.txt';
+        $I->assertFileDoesNotExist($filePath, 'The robo script should be ignoring the file invalidfile2.txt');
+    }
 }
