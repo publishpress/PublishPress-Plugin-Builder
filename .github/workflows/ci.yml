@@ -18,5 +18,3 @@ jobs:
         uses: php-actions/composer@v1
       - name: Run codeception tests
         run: vendor/bin/codecept run
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v2
