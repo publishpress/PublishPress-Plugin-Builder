@@ -75,8 +75,10 @@ class PackageBuilderTasksCest
     {
     }
 
-    private function callRoboCommand($command, $sourcePath)
+    private function callRoboCommand($command, $sourcePath): string
     {
+        ob_start();
+
         $procResource = proc_open(
             '../../../vendor/bin/robo ' . $command,
             [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']],
@@ -85,6 +87,8 @@ class PackageBuilderTasksCest
         );
 
         proc_close($procResource);
+
+        return ob_get_clean();
     }
 
     public function testBuildTask_ShouldCreateAZipFileInTheDistDirNamedWithPluginNameAndVersion(UnitTester $I)
@@ -95,17 +99,17 @@ class PackageBuilderTasksCest
 
         $sourcePath = __DIR__ . '/../_data/build-test';
 
-        $this->callRoboCommand('build', realpath($sourcePath));
+        $output = $this->callRoboCommand('build', realpath($sourcePath));
 
         $I->assertFileExists(
             realpath($sourcePath . '/dist/publishpress-dummy-2.0.4.zip'),
-            'There should be a ZIP file in the path ' . $sourcePath
+            'There should be a ZIP file in the path ' . $sourcePath . '. The output of the robo task is' . $output
         );
     }
 
     public function testBuildTask_ShouldCreateZipFileWithNoIgnoredFiles(UnitTester $I)
     {
-        $I->wantToTest('the build task with no custom destination, should create a ZIP file without any ignore file');
+        $I->wantToTest('the build task with no custom destination, should create a ZIP file without any ignored file');
 
         $sourcePath = __DIR__ . '/../_data/build-test';
 
