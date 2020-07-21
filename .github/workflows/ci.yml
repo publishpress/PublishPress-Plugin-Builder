@@ -7,28 +7,26 @@ on:
     branches: [ master, development ]
 
 jobs:
-  composer:
-    name: Composer
+  test:
+    name: Tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Run composer
+      - name: Composer install
         uses: php-actions/composer@v1
-
-  test:
-    name: Tests
-    runs-on: ubuntu-latest
-    needs: composer
-    steps:
       - name: Run codeception tests
         run: vendor/bin/codecept run
 
   quality:
     name: Code quality
     runs-on: ubuntu-latest
-    needs: composer
+    needs: test
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Composer install
+        uses: php-actions/composer@v1
       - name: phpmd
         run: vendor/bin/phpmd ./src text phpmd-ruleset.xml
       - name: phpcs
