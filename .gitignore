@@ -1,0 +1,8 @@
+/vendor/
+/.idea/
+/tests/_data/build-test/dist/*
+.DS_Store
+!/tests/_data/build-test/.DS_Store
+tests/_data/build-ignoring-test/dist/*
+tests/_data/build-test/dist/*
+tests/_data/build-move/dist/*

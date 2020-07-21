@@ -1,0 +1,20 @@
+name: CI
+
+on:
+  push:
+    branches: [ master, development ]
+  pull_request:
+    branches: [ master, development ]
+
+jobs:
+  test:
+    name: Run Codeception Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Run composer
+        uses: php-actions/composer@v1
+      - name: Run codeception tests
+        run: vendor/bin/codecept run
