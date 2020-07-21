@@ -1,4 +1,5 @@
 <?php
+
 /**
  * GNU General Public License, Free Software Foundation <http://creativecommons.org/licenses/GPL/2.0/>
  *
@@ -26,11 +27,11 @@ use Symfony\Component\Yaml\Parser;
 
 abstract class PackageBuilderTasks extends \Robo\Tasks
 {
-    const DIST_DIR_NAME = 'dist';
+    protected const DIST_DIR_NAME = 'dist';
 
-    const OUTPUT_SEPARATOR = '----------------------------------------------------------------------';
+    protected const OUTPUT_SEPARATOR = '----------------------------------------------------------------------';
 
-    const TITLE_SEPARATOR = '######################################################################';
+    protected const TITLE_SEPARATOR = '######################################################################';
 
     /**
      * @var string

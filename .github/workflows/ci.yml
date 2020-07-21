@@ -18,5 +18,7 @@ jobs:
         uses: php-actions/composer@v1
       - name: phpmd
         run: vendor/bin/phpmd ./src text phpmd-ruleset.xml
+      - name: phpcs
+        run: vendor/bin/phpcs --standard=PSR12 ./src/
       - name: Run codeception tests
         run: vendor/bin/codecept run
