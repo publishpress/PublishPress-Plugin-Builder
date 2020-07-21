@@ -8,11 +8,15 @@ on:
 
 jobs:
   test:
+    name: Run Codeception Tests
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: php-actions/composer@v1
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Run composer
+        uses: php-actions/composer@v1
+      - name: Run codeception tests
+        run: vendor/bin/codecept run
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v2
-      - uses: joelwmale/codeception-action@104032c6a73aa7f1ad17dc81a9eebf7d122d76b6
