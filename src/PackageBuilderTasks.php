@@ -74,6 +74,11 @@ abstract class PackageBuilderTasks extends \Robo\Tasks
     private $yamlParser = null;
 
     /**
+     * @var string
+     */
+    private $composerPath = 'composer';
+
+    /**
      * PackageBuilderTasks constructor.
      *
      *
@@ -130,17 +135,26 @@ abstract class PackageBuilderTasks extends \Robo\Tasks
 
     private function buildPackage(): void
     {
+        $fullDestinationPath = $this->destinationPath . '/' . $this->pluginName;
+        $this->_mirrorDir($this->sourcePath, $fullDestinationPath);
+
+        // Runs composer update --no-dev for removing any dev requirements from the vendor folder
+        $this->taskComposerUpdate($this->composerPath)
+             ->optimizeAutoloader()
+             ->noInteraction()
+             ->noSuggest()
+             ->dir($fullDestinationPath)
+             ->noDev()
+             ->run();
+
+        $this->removeIgnoredFiles($fullDestinationPath);
+
         $zipPath = sprintf(
             '%s/%s-%s.zip',
             $this->destinationPath,
             $this->pluginName,
             $this->pluginVersion
         );
-
-        $fullDestinationPath = $this->destinationPath . '/' . $this->pluginName;
-        $this->_mirrorDir($this->sourcePath, $fullDestinationPath);
-
-        $this->removeIgnoredFiles($fullDestinationPath);
 
         $this->taskPack($zipPath)
              ->add([$this->pluginName => $fullDestinationPath])

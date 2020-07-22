@@ -127,4 +127,49 @@ class PackageBuilderTasksCest
             $I->assertFileDoesNotExist($filePath, 'The file ' . $filePath . ' should not exist in the package');
         }
     }
+
+    public function testBuildTask_WithDevRequirements_ShouldCreateAZipFileWithoutTheDevRequirements(
+        UnitTester $I
+    ) {
+        $I->wantToTest(
+            'the build task with some dev required libraries, should create a ZIP file without the dev requirements'
+        );
+
+        $sourcePath = __DIR__ . '/../_data/build-dev-req-test';
+
+        $this->callRoboCommand('build', realpath($sourcePath));
+
+        $unzippedPath = $sourcePath . '/dist/unzipped';
+
+        $zip = new \PhpZip\ZipFile();
+        try {
+            if (!file_exists($unzippedPath)) {
+                mkdir($unzippedPath);
+            }
+
+            $zip->openFile($sourcePath . '/dist/publishpress-dummy-2.0.4.zip');
+            $zip->extractTo($unzippedPath);
+        } catch (Exception $e) {
+            $I->fail($e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
+        } finally {
+            $zip->close();
+        }
+
+        $unzippedVendorPath = $unzippedPath . '/publishpress-dummy/vendor';
+
+        // Twig is not a dev requirement, so it should be in the vendor folder
+        $I->assertFileExists($unzippedVendorPath . '/twig/twig/src/TwigFilter.php');
+
+        // Check if phpmd is not in the vendor dir
+        $I->assertFileDoesNotExist($unzippedVendorPath . '/phpmd');
+
+        // Check if pdepend is not in the vendor dir
+        $I->assertFileDoesNotExist($unzippedVendorPath . '/pdepend');
+
+        // Check if phpmd is not in the autoloader
+        $autoloaderFilePath = $unzippedVendorPath . '/composer/autoload_static.php';
+        $I->assertFileExists($autoloaderFilePath);
+        $autoloaderText = file_get_contents($autoloaderFilePath);
+        $I->assertStringNotContainsString('PHPMD', $autoloaderText);
+    }
 }
