@@ -1,4 +1,5 @@
 <?php
+
 /**
  * GNU General Public License, Free Software Foundation <http://creativecommons.org/licenses/GPL/2.0/>
  *
@@ -28,6 +29,7 @@ class PluginFileReader
     {
         $pluginFileContent = trim(file_get_contents($pluginFilePath));
 
+        $matches = [];
         preg_match('/Version:\s*([0-9\.a-z\-]*)/i', $pluginFileContent, $matches);
 
         return $matches[1];

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * GNU General Public License, Free Software Foundation <http://creativecommons.org/licenses/GPL/2.0/>
  *
@@ -22,15 +23,16 @@
 
 namespace PublishPressBuilder;
 
-use Symfony\Component\Yaml\Yaml;
+use Robo\Tasks;
+use Symfony\Component\Yaml\Parser;
 
-abstract class PackageBuilderTasks extends \Robo\Tasks
+abstract class PackageBuilderTasks extends Tasks
 {
-    const DIST_DIR_NAME = 'dist';
+    protected const DIST_DIR_NAME = 'dist';
 
-    const OUTPUT_SEPARATOR = '----------------------------------------------------------------------';
+    protected const OUTPUT_SEPARATOR = '----------------------------------------------------------------------';
 
-    const TITLE_SEPARATOR = '######################################################################';
+    protected const TITLE_SEPARATOR = '######################################################################';
 
     /**
      * @var string
@@ -68,15 +70,28 @@ abstract class PackageBuilderTasks extends \Robo\Tasks
     private $filesToIgnore = [];
 
     /**
+     * @var Parser
+     */
+    private $yamlParser = null;
+
+    /**
+     * @var string
+     */
+    private $composerPath = 'composer';
+
+    /**
      * PackageBuilderTasks constructor.
+     *
+     *
      */
     public function __construct()
     {
         $this->sourcePath = getcwd();
+        $this->yamlParser = new Parser();
 
         $this->destinationPath = $this->sourcePath . '/' . self::DIST_DIR_NAME;
         if ($this->envFileExists()) {
-            $builderEnv = Yaml::parseFile($this->getEnvFilePath());
+            $builderEnv = $this->yamlParser->parseFile($this->getEnvFilePath());
             if (isset($builderEnv['destination'])) {
                 $this->destinationPath = realpath($builderEnv['destination']);
             }
@@ -91,14 +106,46 @@ abstract class PackageBuilderTasks extends \Robo\Tasks
         );
     }
 
+    private function envFileExists()
+    {
+        return file_exists($this->getEnvFilePath());
+    }
+
     private function getEnvFilePath()
     {
         return $this->sourcePath . '/builder.env';
     }
 
-    private function envFileExists()
+    /**
+     * Build the plugin distribution files packing into a ZIP file
+     */
+    public function build(): void
     {
-        return file_exists($this->getEnvFilePath());
+        $this->buildUnpacked();
+
+        $zipPath = sprintf(
+            '%s/%s-%s.zip',
+            $this->destinationPath,
+            $this->pluginName,
+            $this->pluginVersion
+        );
+
+        $fullDestinationPath = $this->getFullDestinationPath();
+
+        $this->packBuiltDir($zipPath, $this->pluginName, $fullDestinationPath);
+    }
+
+    /**
+     * Build the plugin distribution files without packing into a ZIP file
+     */
+    public function buildUnpacked(): void
+    {
+        $this->sayTitle();
+
+        $fullDestinationPath = $this->getFullDestinationPath();
+
+        $this->prepareCleanDistDir($this->destinationPath);
+        $this->buildToDir($this->sourcePath, $fullDestinationPath, $this->composerPath);
     }
 
     private function sayTitle(): void
@@ -111,55 +158,50 @@ abstract class PackageBuilderTasks extends \Robo\Tasks
         $this->say(self::OUTPUT_SEPARATOR);
     }
 
-    public function build(): void
+    private function getFullDestinationPath()
     {
-        $this->sayTitle();
-
-        $this->prepareCleanDistDir();
-        $this->buildPackage();
+        return $this->destinationPath . '/' . $this->pluginName;
     }
 
-    private function buildPackage(): void
+    private function prepareCleanDistDir($destinationPath): void
     {
-        $zipPath = sprintf(
-            '%s/%s-%s.zip',
-            $this->destinationPath,
-            $this->pluginName,
-            $this->pluginVersion
-        );
+        if (file_exists($destinationPath)) {
+            $this->_cleanDir($destinationPath);
+            return;
+        }
 
-        $destinationPath = $this->destinationPath . '/' . $this->pluginName;
-        $this->_mirrorDir($this->sourcePath, $destinationPath);
+        $this->_mkdir($destinationPath);
+    }
 
-        $this->removeIgnoredFiles($destinationPath);
+    private function buildToDir($sourcePath, $fullDestinationPath, $composerPath): void
+    {
+        $this->_mirrorDir($sourcePath, $fullDestinationPath);
 
-        $this->taskPack($zipPath)
-             ->add([$this->pluginName => $destinationPath])
+        // Runs composer update --no-dev for removing any dev requirements from the vendor folder
+        $this->taskComposerUpdate($composerPath)
+             ->optimizeAutoloader()
+             ->noInteraction()
+             ->noSuggest()
+             ->dir($fullDestinationPath)
+             ->noDev()
              ->run();
+
+        $this->removeIgnoredFiles($fullDestinationPath);
     }
 
     private function removeIgnoredFiles($dirPath): void
     {
-        $filesToIgnore = $this->getListOfFilesToIgnore();
+        $listOfFilesToIgnore = $this->getListOfFilesToIgnore();
 
-        if (empty($filesToIgnore)) {
+        if (empty($listOfFilesToIgnore)) {
             return;
         }
 
-        foreach ($filesToIgnore as $file) {
+        foreach ($listOfFilesToIgnore as $file) {
             $path = $dirPath . '/' . $file;
             if (file_exists($path)) {
                 $this->_remove($path);
             }
-        }
-    }
-
-    private function prepareCleanDistDir(): void
-    {
-        if (file_exists($this->destinationPath)) {
-            $this->_cleanDir($this->destinationPath);
-        } else {
-            $this->_mkdir($this->destinationPath);
         }
     }
 
@@ -168,6 +210,13 @@ abstract class PackageBuilderTasks extends \Robo\Tasks
         $defaultList = file(__DIR__ . '/../files-to-ignore.txt', FILE_IGNORE_NEW_LINES);
 
         return array_merge($defaultList, $this->filesToIgnore);
+    }
+
+    private function packBuiltDir($zipPath, $pluginName, $fullDestinationPath): void
+    {
+        $this->taskPack($zipPath)
+             ->add([$pluginName => $fullDestinationPath])
+             ->run();
     }
 
     protected function appendToFileToIgnore(array $filesToIgnore): void

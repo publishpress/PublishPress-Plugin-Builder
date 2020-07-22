@@ -1,4 +1,5 @@
 <?php
+
 /**
  * GNU General Public License, Free Software Foundation <http://creativecommons.org/licenses/GPL/2.0/>
  *
@@ -30,12 +31,7 @@ class ComposerFileReader implements ComposerFileReaderInterface
         $composerFileJson = json_decode($composerFileJson);
 
         $pluginName = explode('/', $composerFileJson->name);
-
-        if (count($pluginName) > 1) {
-            $pluginName = $pluginName[count($pluginName) - 1];
-        } else {
-            $pluginName = $pluginName[0];
-        }
+        $pluginName = count($pluginName) > 1 ? $pluginName[count($pluginName) - 1] : $pluginName[0];
 
         return $pluginName;
     }
