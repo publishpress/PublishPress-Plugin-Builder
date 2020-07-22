@@ -172,4 +172,25 @@ class PackageBuilderTasksCest
         $autoloaderText = file_get_contents($autoloaderFilePath);
         $I->assertStringNotContainsString('PHPMD', $autoloaderText);
     }
+
+    public function testBuildNoPackTask_ShouldNotCreateAZipFileInTheDistDirButOnlyAFolderInTheDistFolder(UnitTester $I)
+    {
+        $I->wantToTest(
+            'the build-unpacked task, should not create a ZIP file in the ./dist dir but only a folder in the dist dir'
+        );
+
+        $sourcePath = __DIR__ . '/../_data/build-test';
+
+        $this->callRoboCommand('build:unpacked', realpath($sourcePath));
+
+        $I->assertFileNotExists(
+            realpath($sourcePath . '/dist/publishpress-dummy-2.0.4.zip'),
+            'There should not be a ZIP file in the path ' . $sourcePath
+        );
+
+        $I->assertFileExists(
+            $sourcePath . '/dist/publishpress-dummy',
+            'There should be a folder named publishpress-dummy in the dist/ dir on the path ' . $sourcePath
+        );
+    }
 }
