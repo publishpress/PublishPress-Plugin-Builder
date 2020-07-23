@@ -90,10 +90,10 @@ abstract class PackageBuilderTasks extends Tasks
         $this->yamlParser = new Parser();
 
         $this->destinationPath = $this->sourcePath . '/' . self::DIST_DIR_NAME;
-        if ($this->envFileExists()) {
-            $builderEnv = $this->yamlParser->parseFile($this->getEnvFilePath());
-            if (isset($builderEnv['destination'])) {
-                $this->destinationPath = realpath($builderEnv['destination']);
+        if ($this->settingsFileExists()) {
+            $customSettings = $this->yamlParser->parseFile($this->getSettingsFilePath());
+            if (isset($customSettings['destination'])) {
+                $this->destinationPath = realpath($customSettings['destination']);
             }
         }
 
@@ -106,14 +106,14 @@ abstract class PackageBuilderTasks extends Tasks
         );
     }
 
-    private function envFileExists()
+    private function settingsFileExists()
     {
-        return file_exists($this->getEnvFilePath());
+        return file_exists($this->getSettingsFilePath());
     }
 
-    private function getEnvFilePath()
+    private function getSettingsFilePath()
     {
-        return $this->sourcePath . '/builder.env';
+        return $this->sourcePath . '/builder.yml';
     }
 
     /**
