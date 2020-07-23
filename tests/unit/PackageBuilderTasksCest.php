@@ -83,6 +83,10 @@ class PackageBuilderTasksCest
 
         $sourcePath = __DIR__ . '/../_data/build-move-test';
 
+        if (file_exists($sourcePath . '/../../_output/publishpress-dummy-2.0.4.zip')) {
+            unlink($sourcePath . '/../../_output/publishpress-dummy-2.0.4.zip');
+        }
+
         $this->callRoboCommand('build', realpath($sourcePath));
 
         $I->assertFileExists(

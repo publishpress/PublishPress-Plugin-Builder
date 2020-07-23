@@ -32,6 +32,7 @@ RoboFile.php
 assets_wp
 bin
 build.xml
+builder.yml
 codeception.dist.yml
 codeception.yml
 composer.json
