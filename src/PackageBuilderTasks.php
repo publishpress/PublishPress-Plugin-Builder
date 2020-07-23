@@ -116,6 +116,15 @@ abstract class PackageBuilderTasks extends Tasks
         return $this->sourcePath . '/builder.env';
     }
 
+    private function getZipFileName()
+    {
+        return sprintf(
+            '%s-%s.zip',
+            $this->pluginName,
+            $this->pluginVersion
+        );
+    }
+
     /**
      * Build the plugin distribution files packing into a ZIP file
      */
@@ -124,15 +133,16 @@ abstract class PackageBuilderTasks extends Tasks
         $this->buildUnpacked();
 
         $zipPath = sprintf(
-            '%s/%s-%s.zip',
+            '%s/%s',
             $this->destinationPath,
-            $this->pluginName,
-            $this->pluginVersion
+            $this->getZipFileName()
         );
 
         $fullDestinationPath = $this->getFullDestinationPath();
 
         $this->packBuiltDir($zipPath, $this->pluginName, $fullDestinationPath);
+
+        $this->_deleteDir($this->destinationPath . '/' . $this->pluginName);
     }
 
     /**
@@ -144,7 +154,7 @@ abstract class PackageBuilderTasks extends Tasks
 
         $fullDestinationPath = $this->getFullDestinationPath();
 
-        $this->prepareCleanDistDir($this->destinationPath);
+        $this->prepareCleanDistDir($this->destinationPath, $this->pluginName);
         $this->buildToDir($this->sourcePath, $fullDestinationPath, $this->composerPath);
     }
 
@@ -163,10 +173,11 @@ abstract class PackageBuilderTasks extends Tasks
         return $this->destinationPath . '/' . $this->pluginName;
     }
 
-    private function prepareCleanDistDir($destinationPath): void
+    private function prepareCleanDistDir($destinationPath, $pluginName): void
     {
         if (file_exists($destinationPath)) {
-            $this->_cleanDir($destinationPath);
+            $this->_deleteDir($destinationPath . '/' . $pluginName);
+            $this->_remove($destinationPath . '/' . $this->getZipFileName());
             return;
         }
 

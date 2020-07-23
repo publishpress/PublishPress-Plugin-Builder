@@ -16,6 +16,8 @@ class PackageBuilderTasksCest
 
     private function callRoboCommand($command, $sourcePath)
     {
+        $pipes = null;
+
         $procResource = proc_open(
             '../../../vendor/bin/robo ' . $command,
             [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']],
@@ -191,6 +193,27 @@ class PackageBuilderTasksCest
         $I->assertFileExists(
             $sourcePath . '/dist/publishpress-dummy',
             'There should be a folder named publishpress-dummy in the dist/ dir on the path ' . $sourcePath
+        );
+    }
+
+    public function testBuildTask_ShouldDeleteTheTmpFolderAfterBuildingTheZipFile(UnitTester $I)
+    {
+        $I->wantToTest(
+            'the build task, should delete the tmp folder after building the zip file'
+        );
+
+        $sourcePath = __DIR__ . '/../_data/build-test';
+
+        $this->callRoboCommand('build', realpath($sourcePath));
+
+        $I->assertFileExists(
+            realpath($sourcePath . '/dist/publishpress-dummy-2.0.4.zip'),
+            'There should be a ZIP file in the path ' . $sourcePath
+        );
+
+        $I->assertFileNotExists(
+            realpath($sourcePath . '/dist/publishpress-dummy'),
+            'The temp folder should be removed after building the zip'
         );
     }
 }
