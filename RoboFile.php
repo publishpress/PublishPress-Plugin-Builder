@@ -1,13 +1,6 @@
 <?php
+
 /**
- * Plugin Name: PublishPress Dummy 1
- * Plugin URI:  https://wordpress.org/plugins/publishpress-dummy-1/
- * Description: Dummy plugins file for tests
- * Author:      PublishPress
- * Author URI:  https://publishpress.com
- * Version: 2.4.0
- * Text Domain: publishpress-dummy
- *
  * GNU General Public License, Free Software Foundation <http://creativecommons.org/licenses/GPL/2.0/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -23,11 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @link        https://publishpress.com/dummy/
- * @author      PublishPress <help@publishpress.com>
+ * @package     PublishPress
+ * @author      PublishPress
  * @copyright   Copyright (C) 2020 PublishPress. All rights reserved.
- * @license     GPLv2 or later
- * @since       1.0.0
  */
 
-include_once __DIR__ . '/src/plugin.php';
+class RoboFile extends \PublishPressBuilder\PackageBuilderTasks
+{
+}

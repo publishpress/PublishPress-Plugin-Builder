@@ -159,42 +159,25 @@ abstract class PackageBuilderTasks extends Tasks
     }
 
     /**
-     * Update the plugin version according to the passed version number
-     *
-     * @param $newVersion
+     * Show the current version of the plugin
+     * @param string|null $newVersion
      */
-    public function setVersion($newVersion): void
+    public function version(string $newVersion = null): void
     {
         $this->sayTitle();
 
         if (empty($newVersion)) {
-            $this->yell('Please, specify the new plugin version in the command', 40, 'red');
+            return;
         }
 
         $this->say(
             sprintf(
-                'Updating plugin version from %s to %s',
-                $this->pluginVersion,
+                'Updating plugin version to %s',
                 $newVersion
             )
         );
 
-        $this->pluginVersionHandler->setPluginVersion();
-    }
-
-    /**
-     * Show the current version of the plugin
-     */
-    public function getVersion(): void
-    {
-        $this->sayTitle();
-
-        $this->say(
-            sprintf(
-                'Plugin version%s',
-                $this->pluginVersion
-            )
-        );
+        $this->pluginVersionHandler->setPluginVersion($this->sourcePath, $this->pluginName, $newVersion);
     }
 
     private function sayTitle(): void

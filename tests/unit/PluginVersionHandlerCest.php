@@ -32,7 +32,7 @@ class PluginVersionHandlerCest
         $utils         = new \PublishPressBuilder\PluginVersionHandler();
         $pluginVersion = $utils->getPluginVersion($filePath);
 
-        $I->assertEquals('2.0.4', $pluginVersion);
+        $I->assertEquals('2.4.0', $pluginVersion);
     }
 
     public function getPluginVersion_ForPluginFileWithUnstableVersionNumber_ReturnsVersionNumber(
@@ -47,7 +47,7 @@ class PluginVersionHandlerCest
         $utils         = new \PublishPressBuilder\PluginVersionHandler();
         $pluginVersion = $utils->getPluginVersion($filePath);
 
-        $I->assertEquals('2.0.4-beta.1', $pluginVersion);
+        $I->assertEquals('2.4.0-beta.1', $pluginVersion);
     }
 
     /**
@@ -103,7 +103,7 @@ class PluginVersionHandlerCest
     }
 
     /**
-     * @example ["/ \\* Version: [0-9]\\.[0-9]\\.[0-9]/", " * Version: 2.0.4", " * Version: 3.0.0"]
+     * @example ["/ \\* Version: [0-9]\\.[0-9]\\.[0-9]/", " * Version: 2.4.0", " * Version: 3.0.0"]
      * @example ["/Copyright \\(C\\) 2020/", "Copyright (C) 2020", "Copyright (C) 2045"]
      */
     public function replaceTextInFile_ReplacesTextInAFile(
@@ -207,7 +207,7 @@ class PluginVersionHandlerCest
 
         $tmpFileContent = file_get_contents($tmpFile);
 
-        $I->assertStringNotContainsString('* Version: 2.0.4', $tmpFileContent);
+        $I->assertStringNotContainsString('* Version: 2.4.0', $tmpFileContent);
         $I->assertStringContainsString('* Version: ' . $newVersion, $tmpFileContent);
     }
 

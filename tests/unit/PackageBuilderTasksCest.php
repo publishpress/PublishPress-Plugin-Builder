@@ -14,18 +14,29 @@ class PackageBuilderTasksCest
         return file(__DIR__ . '/../../files-to-ignore.txt', FILE_IGNORE_NEW_LINES);
     }
 
-    private function callRoboCommand($command, $sourcePath)
-    {
-        $pipes = null;
+    private function callRoboCommand(
+        string $command,
+        string $sourcePath,
+        string $roboPath = '../../../vendor/bin/robo'
+    ): string {
+        $pipes  = null;
+        $output = '';
 
-        $procResource = proc_open(
-            '../../../vendor/bin/robo ' . $command,
+        $process = proc_open(
+            $roboPath . ' ' . $command,
             [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']],
             $pipes,
             realpath($sourcePath)
         );
 
-        proc_close($procResource);
+        if (is_resource($process)) {
+            $output = stream_get_contents($pipes[1]);
+            fclose($pipes[1]);
+        }
+
+        proc_close($process);
+
+        return $output;
     }
 
     public function testBuildTask_ShouldCreateAZipFileInTheDistDirNamedWithPluginNameAndVersion(UnitTester $I)
@@ -39,7 +50,7 @@ class PackageBuilderTasksCest
         $this->callRoboCommand('build', realpath($sourcePath));
 
         $I->assertFileExists(
-            realpath($sourcePath . '/dist/publishpress-dummy-2.0.4.zip'),
+            realpath($sourcePath . '/dist/publishpress-dummy-2.4.0.zip'),
             'There should be a ZIP file in the path ' . $sourcePath
         );
     }
@@ -60,7 +71,7 @@ class PackageBuilderTasksCest
                 mkdir($unzippedPath);
             }
 
-            $zip->openFile($sourcePath . '/dist/publishpress-dummy-2.0.4.zip');
+            $zip->openFile($sourcePath . '/dist/publishpress-dummy-2.4.0.zip');
             $zip->extractTo($unzippedPath);
         } catch (Exception $e) {
             $I->fail($e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
@@ -83,14 +94,14 @@ class PackageBuilderTasksCest
 
         $sourcePath = __DIR__ . '/../_data/build-move-test';
 
-        if (file_exists($sourcePath . '/../../_output/publishpress-dummy-2.0.4.zip')) {
-            unlink($sourcePath . '/../../_output/publishpress-dummy-2.0.4.zip');
+        if (file_exists($sourcePath . '/../../_output/publishpress-dummy-2.4.0.zip')) {
+            unlink($sourcePath . '/../../_output/publishpress-dummy-2.4.0.zip');
         }
 
         $this->callRoboCommand('build', realpath($sourcePath));
 
         $I->assertFileExists(
-            realpath($sourcePath . '/../../_output/publishpress-dummy-2.0.4.zip'),
+            realpath($sourcePath . '/../../_output/publishpress-dummy-2.4.0.zip'),
             'There should be a zip file in the path ' . $sourcePath
         );
     }
@@ -114,7 +125,7 @@ class PackageBuilderTasksCest
                 mkdir($unzippedPath);
             }
 
-            $zip->openFile($sourcePath . '/dist/publishpress-dummy-2.0.4.zip');
+            $zip->openFile($sourcePath . '/dist/publishpress-dummy-2.4.0.zip');
             $zip->extractTo($unzippedPath);
         } catch (Exception $e) {
             $I->fail($e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
@@ -153,7 +164,7 @@ class PackageBuilderTasksCest
                 mkdir($unzippedPath);
             }
 
-            $zip->openFile($sourcePath . '/dist/publishpress-dummy-2.0.4.zip');
+            $zip->openFile($sourcePath . '/dist/publishpress-dummy-2.4.0.zip');
             $zip->extractTo($unzippedPath);
         } catch (Exception $e) {
             $I->fail(
@@ -192,7 +203,7 @@ class PackageBuilderTasksCest
         $this->callRoboCommand('build:unpacked', realpath($sourcePath));
 
         $I->assertFileNotExists(
-            realpath($sourcePath . '/dist/publishpress-dummy-2.0.4.zip'),
+            realpath($sourcePath . '/dist/publishpress-dummy-2.4.0.zip'),
             'There should not be a ZIP file in the path ' . $sourcePath
         );
 
@@ -213,7 +224,7 @@ class PackageBuilderTasksCest
         $this->callRoboCommand('build', realpath($sourcePath));
 
         $I->assertFileExists(
-            realpath($sourcePath . '/dist/publishpress-dummy-2.0.4.zip'),
+            realpath($sourcePath . '/dist/publishpress-dummy-2.4.0.zip'),
             'There should be a ZIP file in the path ' . $sourcePath
         );
 
@@ -221,5 +232,145 @@ class PackageBuilderTasksCest
             realpath($sourcePath . '/dist/publishpress-dummy'),
             'The temp folder should be removed after building the zip'
         );
+    }
+
+    public function testVersionTask_WithNoArgument_ShouldDisplayTheCurrentVersionNumber(UnitTester $I)
+    {
+        $I->wantToTest(
+            'the version task with no argument, should display the current version number only'
+        );
+
+        $tmpDirPath = __DIR__ . '/../_data/build-test/dist/publishpress-dummy';
+
+        if (!file_exists($tmpDirPath)) {
+            mkdir($tmpDirPath);
+        }
+
+        copy(__DIR__ . '/../_data/build-test/readme.txt', $tmpDirPath . '/readme.txt');
+        copy(__DIR__ . '/../_data/build-test/publishpress-dummy.php', $tmpDirPath . '/publishpress-dummy.php');
+        copy(__DIR__ . '/../_data/build-test/RoboFile.php', $tmpDirPath . '/RoboFile.php');
+        copy(__DIR__ . '/../_data/build-test/composer.json', $tmpDirPath . '/composer.json');
+
+        $output = $this->callRoboCommand('version', realpath($tmpDirPath), '../../../../../vendor/bin/robo');
+
+        $I->assertStringContainsString('Plugin Version: 2.4.0', $output);
+    }
+
+    public function testVersionTask_WithArgument_ShouldDisplayTheNewVersionNumber(UnitTester $I)
+    {
+        $I->wantToTest(
+            'the version task with a new version as argument, should update the plugin version number'
+        );
+
+        $tmpDirPath = __DIR__ . '/../_data/build-test/dist/publishpress-dummy';
+
+        if (!file_exists($tmpDirPath)) {
+            mkdir($tmpDirPath);
+        }
+
+        copy(__DIR__ . '/../_data/build-test/readme.txt', $tmpDirPath . '/readme.txt');
+        copy(__DIR__ . '/../_data/build-test/publishpress-dummy.php', $tmpDirPath . '/publishpress-dummy.php');
+        copy(__DIR__ . '/../_data/build-test/RoboFile.php', $tmpDirPath . '/RoboFile.php');
+        copy(__DIR__ . '/../_data/build-test/composer.json', $tmpDirPath . '/composer.json');
+
+        $output = $this->callRoboCommand('version 3.0.0-beta.1', realpath($tmpDirPath), '../../../../../vendor/bin/robo');
+
+        $I->assertStringContainsString('Updating plugin version to 3.0.0-beta.1', $output);
+    }
+
+    public function testVersionTask_WithUnstableVersion_ShouldUpdateTheVersionNumberInThePluginFile(UnitTester $I)
+    {
+        $I->wantToTest(
+            'the version task with a unstable version as argument, should update the plugin version number in the plugin file'
+        );
+
+        $tmpDirPath = __DIR__ . '/../_data/build-test/dist/publishpress-dummy';
+
+        if (!file_exists($tmpDirPath)) {
+            mkdir($tmpDirPath);
+        }
+
+        copy(__DIR__ . '/../_data/build-test/readme.txt', $tmpDirPath . '/readme.txt');
+        copy(__DIR__ . '/../_data/build-test/publishpress-dummy.php', $tmpDirPath . '/publishpress-dummy.php');
+        copy(__DIR__ . '/../_data/build-test/RoboFile.php', $tmpDirPath . '/RoboFile.php');
+        copy(__DIR__ . '/../_data/build-test/composer.json', $tmpDirPath . '/composer.json');
+
+        $this->callRoboCommand('version 3.0.0-beta.1', realpath($tmpDirPath), '../../../../../vendor/bin/robo');
+
+        $pluginFileContents = file_get_contents($tmpDirPath . '/publishpress-dummy.php');
+
+        $I->assertStringContainsString('* Version: 3.0.0-beta.1', $pluginFileContents);
+    }
+
+    public function testVersionTask_WithUnstableVersion_ShouldNotUpdateTheVersionNumberInTheReadmeFile(UnitTester $I)
+    {
+        $I->wantToTest(
+            'the version task with a unstable version as argument, should update the plugin version number in the readme.txt file'
+        );
+
+        $tmpDirPath = __DIR__ . '/../_data/build-test/dist/publishpress-dummy';
+
+        if (!file_exists($tmpDirPath)) {
+            mkdir($tmpDirPath);
+        }
+
+        copy(__DIR__ . '/../_data/build-test/readme.txt', $tmpDirPath . '/readme.txt');
+        copy(__DIR__ . '/../_data/build-test/publishpress-dummy.php', $tmpDirPath . '/publishpress-dummy.php');
+        copy(__DIR__ . '/../_data/build-test/RoboFile.php', $tmpDirPath . '/RoboFile.php');
+        copy(__DIR__ . '/../_data/build-test/composer.json', $tmpDirPath . '/composer.json');
+
+        $this->callRoboCommand('version 3.0.0-beta.1', realpath($tmpDirPath), '../../../../../vendor/bin/robo');
+
+        $pluginFileContents = file_get_contents($tmpDirPath . '/readme.txt');
+
+        $I->assertStringContainsString('Stable tag: 2.4.0', $pluginFileContents);
+    }
+
+    public function testVersionTask_WithStableVersion_ShouldUpdateTheVersionNumberInTheReadmeFile(UnitTester $I)
+    {
+        $I->wantToTest(
+            'the version task with a stable version as argument, should update the plugin version number in the readme.txt file'
+        );
+
+        $tmpDirPath = __DIR__ . '/../_data/build-test/dist/publishpress-dummy';
+
+        if (!file_exists($tmpDirPath)) {
+            mkdir($tmpDirPath);
+        }
+
+        copy(__DIR__ . '/../_data/build-test/readme.txt', $tmpDirPath . '/readme.txt');
+        copy(__DIR__ . '/../_data/build-test/publishpress-dummy.php', $tmpDirPath . '/publishpress-dummy.php');
+        copy(__DIR__ . '/../_data/build-test/RoboFile.php', $tmpDirPath . '/RoboFile.php');
+        copy(__DIR__ . '/../_data/build-test/composer.json', $tmpDirPath . '/composer.json');
+
+        $this->callRoboCommand('version 3.0.0', realpath($tmpDirPath), '../../../../../vendor/bin/robo');
+
+        $pluginFileContents = file_get_contents($tmpDirPath . '/readme.txt');
+
+        $I->assertStringContainsString('Stable tag: 3.0.0', $pluginFileContents);
+    }
+
+    public function testVersionTask_WithStableVersion_ShouldUpdateTheVersionNumberInThePluginFile(UnitTester $I)
+    {
+        $I->wantToTest(
+            'the version task with a stable version as argument, should update the plugin version number in the plugin file'
+        );
+
+        $tmpDirPath = __DIR__ . '/../_data/build-test/dist/publishpress-dummy';
+
+        if (!file_exists($tmpDirPath)) {
+            mkdir($tmpDirPath);
+        }
+
+        copy(__DIR__ . '/../_data/build-test/readme.txt', $tmpDirPath . '/readme.txt');
+        copy(__DIR__ . '/../_data/build-test/publishpress-dummy.php', $tmpDirPath . '/publishpress-dummy.php');
+        copy(__DIR__ . '/../_data/build-test/RoboFile.php', $tmpDirPath . '/RoboFile.php');
+        copy(__DIR__ . '/../_data/build-test/composer.json', $tmpDirPath . '/composer.json');
+
+        $this->callRoboCommand('version 3.0.0', realpath($tmpDirPath), '../../../../../vendor/bin/robo');
+
+        $pluginFileContents = file_get_contents($tmpDirPath . '/publishpress-dummy.php');
+
+        $I->assertStringContainsString('* Version: 3.0.0', $pluginFileContents);
     }
 }
