@@ -156,7 +156,9 @@ class PackageBuilderTasksCest
             $zip->openFile($sourcePath . '/dist/publishpress-dummy-2.0.4.zip');
             $zip->extractTo($unzippedPath);
         } catch (Exception $e) {
-            $I->fail($e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
+            $I->fail(
+                $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine() . '. $unzippedPath = ' . $unzippedPath
+            );
         } finally {
             $zip->close();
         }
