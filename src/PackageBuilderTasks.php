@@ -158,7 +158,7 @@ abstract class PackageBuilderTasks extends Tasks
         $this->buildToDir($this->sourcePath, $fullDestinationPath, $this->composerPath);
     }
 
-    public function setversion($newVersion): void
+    public function setVersion($newVersion): void
     {
         $this->sayTitle();
 
@@ -175,6 +175,18 @@ abstract class PackageBuilderTasks extends Tasks
         );
 
         $this->pluginVersionHandler->setPluginVersion();
+    }
+
+    public function getVersion(): void
+    {
+        $this->sayTitle();
+
+        $this->say(
+            sprintf(
+                'Plugin version%s',
+                $this->pluginVersion
+            )
+        );
     }
 
     private function sayTitle(): void
