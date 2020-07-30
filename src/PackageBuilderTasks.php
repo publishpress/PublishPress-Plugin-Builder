@@ -169,7 +169,8 @@ abstract class PackageBuilderTasks extends Tasks
     }
 
     /**
-     * Show the current version of the plugin
+     * Show or set the version number in the plugin files
+     *
      * @param string|null $newVersion
      */
     public function version(string $newVersion = null): void
