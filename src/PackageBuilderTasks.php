@@ -50,9 +50,9 @@ abstract class PackageBuilderTasks extends Tasks
     private $composerFileReader;
 
     /**
-     * @var PluginFileReaderInterface
+     * @var PluginVersionHandlerInterface
      */
-    private $pluginFileReader;
+    private $pluginVersionHandler;
 
     /**
      * @var string
@@ -97,11 +97,11 @@ abstract class PackageBuilderTasks extends Tasks
             }
         }
 
-        $this->composerFileReader = new ComposerFileReader();
-        $this->pluginFileReader   = new PluginFileReader();
+        $this->composerFileReader   = new ComposerFileReader();
+        $this->pluginVersionHandler = new PluginVersionHandler();
 
         $this->pluginName    = $this->composerFileReader->getPluginName($this->sourcePath);
-        $this->pluginVersion = $this->pluginFileReader->getPluginVersion(
+        $this->pluginVersion = $this->pluginVersionHandler->getPluginVersion(
             $this->sourcePath . '/' . $this->pluginName . '.php'
         );
     }
@@ -156,6 +156,25 @@ abstract class PackageBuilderTasks extends Tasks
 
         $this->prepareCleanDistDir($this->destinationPath, $this->pluginName);
         $this->buildToDir($this->sourcePath, $fullDestinationPath, $this->composerPath);
+    }
+
+    public function setversion($newVersion): void
+    {
+        $this->sayTitle();
+
+        if (empty($newVersion)) {
+            $this->yell('Please, specify the new plugin version in the command', 40, 'red');
+        }
+
+        $this->say(
+            sprintf(
+                'Updating plugin version from %s to %s',
+                $this->pluginVersion,
+                $newVersion
+            )
+        );
+
+        $this->pluginVersionHandler->setPluginVersion();
     }
 
     private function sayTitle(): void

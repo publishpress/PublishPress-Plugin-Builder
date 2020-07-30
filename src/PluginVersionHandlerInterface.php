@@ -23,7 +23,9 @@
 
 namespace PublishPressBuilder;
 
-interface PluginFileReaderInterface
+interface PluginVersionHandlerInterface
 {
     public function getPluginVersion(string $pluginFilePath): string;
+
+    public function setPluginVersion(string $pluginPath, string $pluginName, string $pluginVersion): void;
 }
