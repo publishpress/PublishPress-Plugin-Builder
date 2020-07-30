@@ -158,6 +158,11 @@ abstract class PackageBuilderTasks extends Tasks
         $this->buildToDir($this->sourcePath, $fullDestinationPath, $this->composerPath);
     }
 
+    /**
+     * Update the plugin version according to the passed version number
+     *
+     * @param $newVersion
+     */
     public function setVersion($newVersion): void
     {
         $this->sayTitle();
@@ -177,6 +182,9 @@ abstract class PackageBuilderTasks extends Tasks
         $this->pluginVersionHandler->setPluginVersion();
     }
 
+    /**
+     * Show the current version of the plugin
+     */
     public function getVersion(): void
     {
         $this->sayTitle();
