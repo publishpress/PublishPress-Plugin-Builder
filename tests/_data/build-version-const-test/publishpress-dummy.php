@@ -1,6 +1,13 @@
 <?php
-
 /**
+ * Plugin Name: PublishPress Dummy
+ * Plugin URI:  https://wordpress.org/plugins/publishpress-dummy-1/
+ * Description: Dummy plugins file for tests
+ * Author:      PublishPress
+ * Author URI:  https://publishpress.com
+ * Version: 2.4.0
+ * Text Domain: publishpress-dummy
+ *
  * GNU General Public License, Free Software Foundation <http://creativecommons.org/licenses/GPL/2.0/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,24 +23,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @package     PublishPressBuilder
- * @author      PublishPress
+ * @link        https://publishpress.com/dummy/
+ * @author      PublishPress <help@publishpress.com>
  * @copyright   Copyright (C) 2020 PublishPress. All rights reserved.
+ * @license     GPLv2 or later
+ * @since       1.0.0
  */
 
-namespace PublishPressBuilder;
-
-interface PluginVersionHandlerInterface
-{
-    public function getPluginVersion(string $pluginFilePath): string;
-
-    public function setPluginVersion(string $pluginPath, string $pluginName, string $pluginVersion): void;
-
-    public function isStableVersion(string $version): bool;
-
-    public function updateStableTagInTheReadmeFile(string $pluginPath, string $version): void;
-
-    public function updateVersionInThePluginFile(string $pluginPath, string $pluginName, string $version): void;
-
-    public function updateVersionInTheDefinesFile(string $pluginPath, string $constantName, string $version): void;
-}
+define('PUBLISHPRESS_DUMMY_LOADED', 1);

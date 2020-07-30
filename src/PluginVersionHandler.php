@@ -35,21 +35,12 @@ class PluginVersionHandler
         return $matches[1];
     }
 
-    public function setPluginVersion(string $pluginPath, string $pluginName, string $pluginVersion): void
-    {
-        if ($this->isStableVersion($pluginVersion)) {
-            $this->updateStableTagInTheReadmeFile($pluginPath, $pluginVersion);
-        }
-
-        $this->updateVersionInThePluginFile($pluginPath, $pluginName, $pluginVersion);
-    }
-
     public function isStableVersion(string $version): bool
     {
         return preg_match('/^[0-9]+\.[0-9]+\.[0-9]+$/', $version);
     }
 
-    private function updateStableTagInTheReadmeFile(string $pluginPath, string $version): void
+    public function updateStableTagInTheReadmeFile(string $pluginPath, string $version): void
     {
         $this->replaceTextInFile(
             $pluginPath . '/readme.txt',
@@ -58,12 +49,21 @@ class PluginVersionHandler
         );
     }
 
-    private function updateVersionInThePluginFile(string $pluginPath, string $pluginName, string $version): void
+    public function updateVersionInThePluginFile(string $pluginPath, string $pluginName, string $version): void
     {
         $this->replaceTextInFile(
             $pluginPath . '/' . $pluginName . '.php',
             '/^(\s*\*\s*Version:\s*)([^\n]+)\n/m',
             ' * Version: ' . $version . "\n"
+        );
+    }
+
+    public function updateVersionInTheDefinesFile(string $pluginPath, string $constantName, string $version): void
+    {
+        $this->replaceTextInFile(
+            $pluginPath . '/defines.php',
+            '/define\(\'' . $constantName . '\', \'[0-9]+\.[0-9]+\.[0-9]+([0-9a-zA-Z\-\.]*)?\'\);/',
+            'define(\'' . $constantName . '\', \'' . $version . '\');'
         );
     }
 

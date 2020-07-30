@@ -273,7 +273,11 @@ class PackageBuilderTasksCest
         copy(__DIR__ . '/../_data/build-test/RoboFile.php', $tmpDirPath . '/RoboFile.php');
         copy(__DIR__ . '/../_data/build-test/composer.json', $tmpDirPath . '/composer.json');
 
-        $output = $this->callRoboCommand('version 3.0.0-beta.1', realpath($tmpDirPath), '../../../../../vendor/bin/robo');
+        $output = $this->callRoboCommand(
+            'version 3.0.0-beta.1',
+            realpath($tmpDirPath),
+            '../../../../../vendor/bin/robo'
+        );
 
         $I->assertStringContainsString('Updating plugin version to 3.0.0-beta.1', $output);
     }
@@ -372,5 +376,46 @@ class PackageBuilderTasksCest
         $pluginFileContents = file_get_contents($tmpDirPath . '/publishpress-dummy.php');
 
         $I->assertStringContainsString('* Version: 3.0.0', $pluginFileContents);
+    }
+
+    /**
+     * @example ["3.0.1"]
+     * @example ["3.3.1"]
+     * @example ["3.3.4-beta.1"]
+     * @example ["3.3.4-alpha.1"]
+     * @example ["4.0.0-rc.1"]
+     * @example ["4.0.0-feature.142-testing"]
+     */
+    public function testVersionTask_WithVersionNumber_ShouldUpdateTheVersionNumberInTheConstant(
+        UnitTester $I,
+        \Codeception\Example $example
+    ) {
+        $I->wantToTest(
+            'the version task with a stable version as argument, should update the plugin version number in the defines file'
+        );
+
+        $tmpDirPath = __DIR__ . '/../_data/build-version-const-test/dist/publishpress-dummy';
+
+        if (!file_exists($tmpDirPath)) {
+            mkdir($tmpDirPath);
+        }
+
+        copy(__DIR__ . '/../_data/build-version-const-test/readme.txt', $tmpDirPath . '/readme.txt');
+        copy(
+            __DIR__ . '/../_data/build-version-const-test/publishpress-dummy.php',
+            $tmpDirPath . '/publishpress-dummy.php'
+        );
+        copy(__DIR__ . '/../_data/build-version-const-test/RoboFile.php', $tmpDirPath . '/RoboFile.php');
+        copy(__DIR__ . '/../_data/build-version-const-test/composer.json', $tmpDirPath . '/composer.json');
+        copy(__DIR__ . '/../_data/build-version-const-test/defines.php', $tmpDirPath . '/defines.php');
+
+        $this->callRoboCommand('version ' . $example[0], realpath($tmpDirPath), '../../../../../vendor/bin/robo');
+
+        $pluginFileContents = file_get_contents($tmpDirPath . '/defines.php');
+
+        $I->assertStringContainsString(
+            'define(\'PUBLISHPRESS_DUMMY_VERSION\', \'' . $example[0] . '\');',
+            $pluginFileContents
+        );
     }
 }

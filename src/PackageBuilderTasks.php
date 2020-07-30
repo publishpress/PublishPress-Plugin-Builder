@@ -80,6 +80,11 @@ abstract class PackageBuilderTasks extends Tasks
     private $composerPath = 'composer';
 
     /**
+     * @var string
+     */
+    private $versionConstantName = 'DUMMY_CONSTANT_NAME';
+
+    /**
      * PackageBuilderTasks constructor.
      *
      *
@@ -106,17 +111,22 @@ abstract class PackageBuilderTasks extends Tasks
         );
     }
 
-    private function settingsFileExists()
+    protected function setVersionConstantName(string $constantName): void
+    {
+        $this->versionConstantName = $constantName;
+    }
+
+    private function settingsFileExists(): string
     {
         return file_exists($this->getSettingsFilePath());
     }
 
-    private function getSettingsFilePath()
+    private function getSettingsFilePath(): string
     {
         return $this->sourcePath . '/builder.yml';
     }
 
-    private function getZipFileName()
+    private function getZipFileName(): string
     {
         return sprintf(
             '%s-%s.zip',
@@ -176,8 +186,22 @@ abstract class PackageBuilderTasks extends Tasks
                 $newVersion
             )
         );
+        $this->say('');
 
-        $this->pluginVersionHandler->setPluginVersion($this->sourcePath, $this->pluginName, $newVersion);
+        if ($this->pluginVersionHandler->isStableVersion($newVersion)) {
+            $this->pluginVersionHandler->updateStableTagInTheReadmeFile($this->sourcePath, $newVersion);
+            $this->say('Updated stable tag in the file readme.txt');
+        }
+
+        $this->pluginVersionHandler->updateVersionInThePluginFile($this->sourcePath, $this->pluginName, $newVersion);
+        $this->say('Updated version number in the file ' . $this->pluginName);
+
+        if (file_exists($this->sourcePath . '/defines.php')) {
+            // and if no constant define?
+
+            $this->pluginVersionHandler->updateVersionInTheDefinesFile($this->sourcePath, $this->versionConstantName, $newVersion);
+            $this->say('Updated version number in the file defines.php');
+        }
     }
 
     private function sayTitle(): void
@@ -190,7 +214,7 @@ abstract class PackageBuilderTasks extends Tasks
         $this->say(self::OUTPUT_SEPARATOR);
     }
 
-    private function getFullDestinationPath()
+    private function getFullDestinationPath(): string
     {
         return $this->destinationPath . '/' . $this->pluginName;
     }
