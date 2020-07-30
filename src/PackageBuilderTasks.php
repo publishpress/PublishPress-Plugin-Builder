@@ -50,9 +50,9 @@ abstract class PackageBuilderTasks extends Tasks
     private $composerFileReader;
 
     /**
-     * @var PluginFileReaderInterface
+     * @var PluginVersionHandlerInterface
      */
-    private $pluginFileReader;
+    private $pluginVersionHandler;
 
     /**
      * @var string
@@ -80,6 +80,11 @@ abstract class PackageBuilderTasks extends Tasks
     private $composerPath = 'composer';
 
     /**
+     * @var string
+     */
+    private $versionConstantName = 'DUMMY_CONSTANT_NAME';
+
+    /**
      * PackageBuilderTasks constructor.
      *
      *
@@ -97,26 +102,31 @@ abstract class PackageBuilderTasks extends Tasks
             }
         }
 
-        $this->composerFileReader = new ComposerFileReader();
-        $this->pluginFileReader   = new PluginFileReader();
+        $this->composerFileReader   = new ComposerFileReader();
+        $this->pluginVersionHandler = new PluginVersionHandler();
 
         $this->pluginName    = $this->composerFileReader->getPluginName($this->sourcePath);
-        $this->pluginVersion = $this->pluginFileReader->getPluginVersion(
+        $this->pluginVersion = $this->pluginVersionHandler->getPluginVersion(
             $this->sourcePath . '/' . $this->pluginName . '.php'
         );
     }
 
-    private function settingsFileExists()
+    protected function setVersionConstantName(string $constantName): void
+    {
+        $this->versionConstantName = $constantName;
+    }
+
+    private function settingsFileExists(): string
     {
         return file_exists($this->getSettingsFilePath());
     }
 
-    private function getSettingsFilePath()
+    private function getSettingsFilePath(): string
     {
         return $this->sourcePath . '/builder.yml';
     }
 
-    private function getZipFileName()
+    private function getZipFileName(): string
     {
         return sprintf(
             '%s-%s.zip',
@@ -158,6 +168,42 @@ abstract class PackageBuilderTasks extends Tasks
         $this->buildToDir($this->sourcePath, $fullDestinationPath, $this->composerPath);
     }
 
+    /**
+     * Show the current version of the plugin
+     * @param string|null $newVersion
+     */
+    public function version(string $newVersion = null): void
+    {
+        $this->sayTitle();
+
+        if (empty($newVersion)) {
+            return;
+        }
+
+        $this->say(
+            sprintf(
+                'Updating plugin version to %s',
+                $newVersion
+            )
+        );
+        $this->say('');
+
+        if ($this->pluginVersionHandler->isStableVersion($newVersion)) {
+            $this->pluginVersionHandler->updateStableTagInTheReadmeFile($this->sourcePath, $newVersion);
+            $this->say('Updated stable tag in the file readme.txt');
+        }
+
+        $this->pluginVersionHandler->updateVersionInThePluginFile($this->sourcePath, $this->pluginName, $newVersion);
+        $this->say('Updated version number in the file ' . $this->pluginName);
+
+        if (file_exists($this->sourcePath . '/defines.php')) {
+            // and if no constant define?
+
+            $this->pluginVersionHandler->updateVersionInTheDefinesFile($this->sourcePath, $this->versionConstantName, $newVersion);
+            $this->say('Updated version number in the file defines.php');
+        }
+    }
+
     private function sayTitle(): void
     {
         $this->say(self::TITLE_SEPARATOR);
@@ -168,7 +214,7 @@ abstract class PackageBuilderTasks extends Tasks
         $this->say(self::OUTPUT_SEPARATOR);
     }
 
-    private function getFullDestinationPath()
+    private function getFullDestinationPath(): string
     {
         return $this->destinationPath . '/' . $this->pluginName;
     }

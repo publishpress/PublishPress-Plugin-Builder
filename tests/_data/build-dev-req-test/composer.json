@@ -19,6 +19,7 @@
     "twig/twig": "^3.0"
   },
   "require-dev": {
-    "phpmd/phpmd": "^2.8"
+    "phpmd/phpmd": "^2.8",
+    "consolidation/robo": "^2.0"
   }
 }

@@ -12,3 +12,6 @@ tests/_data/build-move/vendor/
 tests/_data/build-dev-req-test/dist/*
 tests/_data/build-dev-req-test/vendor/
 tests/_data/build-move-test/dist/*
+tests/_data/build-move-test/vendor/
+tests/_data/build-version-const-test/dist/*
+tests/_data/build-version-const-test/vendor/

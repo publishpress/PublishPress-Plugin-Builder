@@ -16,14 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @package     PublishPressBuilder
+ * @package     PublishPress
  * @author      PublishPress
  * @copyright   Copyright (C) 2020 PublishPress. All rights reserved.
  */
 
-namespace PublishPressBuilder;
-
-interface PluginFileReaderInterface
+class RoboFile extends \PublishPressBuilder\PackageBuilderTasks
 {
-    public function getPluginVersion(string $pluginFilePath): string;
 }

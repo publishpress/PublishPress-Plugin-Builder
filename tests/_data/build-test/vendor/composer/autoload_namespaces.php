@@ -6,4 +6,5 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'Dflydev\\DotAccessData' => array($vendorDir . '/dflydev/dot-access-data/src'),
 );

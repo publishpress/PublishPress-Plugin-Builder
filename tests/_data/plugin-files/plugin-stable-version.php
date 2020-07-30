@@ -5,7 +5,7 @@
  * Description: Dummy plugins file for tests
  * Author:      PublishPress
  * Author URI:  https://publishpress.com
- * Version: 2.0.4
+ * Version: 2.4.0
  * Text Domain: publishpress-dummy
  *
  * GNU General Public License, Free Software Foundation <http://creativecommons.org/licenses/GPL/2.0/>
