@@ -42,7 +42,12 @@ abstract class PackageBuilderTasks extends Tasks
     /**
      * @var string
      */
-    private $destinationPath;
+    private $finalDestinationPath;
+
+    /**
+     * @var string
+     */
+    private $distPath;
 
     /**
      * @var ComposerFileReaderInterface
@@ -94,11 +99,12 @@ abstract class PackageBuilderTasks extends Tasks
         $this->sourcePath = getcwd();
         $this->yamlParser = new Parser();
 
-        $this->destinationPath = $this->sourcePath . '/' . self::DIST_DIR_NAME;
+        $this->distPath             = $this->sourcePath . '/' . self::DIST_DIR_NAME;
+        $this->finalDestinationPath = $this->distPath;
         if ($this->settingsFileExists()) {
             $customSettings = $this->yamlParser->parseFile($this->getSettingsFilePath());
             if (isset($customSettings['destination'])) {
-                $this->destinationPath = realpath($customSettings['destination']);
+                $this->finalDestinationPath = realpath($customSettings['destination']);
             }
         }
 
@@ -144,15 +150,18 @@ abstract class PackageBuilderTasks extends Tasks
 
         $zipPath = sprintf(
             '%s/%s',
-            $this->destinationPath,
+            $this->finalDestinationPath,
             $this->getZipFileName()
         );
 
-        $fullDestinationPath = $this->getFullDestinationPath();
+        // Remove the zip file if it already exists
+        if (file_exists($zipPath)) {
+            unlink($zipPath);
+        }
 
-        $this->packBuiltDir($zipPath, $this->pluginName, $fullDestinationPath);
+        $this->packBuiltDir($zipPath, $this->pluginName, $this->distPath . '/' . $this->pluginName);
 
-        $this->_deleteDir($this->destinationPath . '/' . $this->pluginName);
+        $this->_deleteDir($this->distPath . '/' . $this->pluginName);
     }
 
     /**
@@ -162,10 +171,8 @@ abstract class PackageBuilderTasks extends Tasks
     {
         $this->sayTitle();
 
-        $fullDestinationPath = $this->getFullDestinationPath();
-
-        $this->prepareCleanDistDir($this->destinationPath, $this->pluginName);
-        $this->buildToDir($this->sourcePath, $fullDestinationPath, $this->composerPath);
+        $this->prepareCleanDistDir($this->distPath, $this->pluginName);
+        $this->buildToDir($this->sourcePath, $this->distPath . '/' . $this->pluginName, $this->composerPath);
     }
 
     /**
@@ -200,7 +207,11 @@ abstract class PackageBuilderTasks extends Tasks
         if (file_exists($this->sourcePath . '/defines.php')) {
             // and if no constant define?
 
-            $this->pluginVersionHandler->updateVersionInTheDefinesFile($this->sourcePath, $this->versionConstantName, $newVersion);
+            $this->pluginVersionHandler->updateVersionInTheDefinesFile(
+                $this->sourcePath,
+                $this->versionConstantName,
+                $newVersion
+            );
             $this->say('Updated version number in the file defines.php');
         }
     }
@@ -213,11 +224,6 @@ abstract class PackageBuilderTasks extends Tasks
         $this->say('Plugin Name: ' . $this->pluginName);
         $this->say('Plugin Version: ' . $this->pluginVersion);
         $this->say(self::OUTPUT_SEPARATOR);
-    }
-
-    private function getFullDestinationPath(): string
-    {
-        return $this->destinationPath . '/' . $this->pluginName;
     }
 
     private function prepareCleanDistDir($destinationPath, $pluginName): void
