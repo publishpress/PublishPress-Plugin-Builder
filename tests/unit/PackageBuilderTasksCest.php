@@ -50,7 +50,7 @@ class PackageBuilderTasksCest
         $this->callRoboCommand('build', realpath($sourcePath));
 
         $I->assertFileExists(
-            realpath($sourcePath . '/dist/publishpress-dummy-2.4.0.zip'),
+            $sourcePath . '/dist/publishpress-dummy-2.4.0.zip',
             'There should be a ZIP file in the path ' . $sourcePath
         );
     }
@@ -101,7 +101,7 @@ class PackageBuilderTasksCest
         $this->callRoboCommand('build', realpath($sourcePath));
 
         $I->assertFileExists(
-            realpath($sourcePath . '/../../_output/publishpress-dummy-2.4.0.zip'),
+            $sourcePath . '/../../_output/publishpress-dummy-2.4.0.zip',
             'There should be a zip file in the path ' . $sourcePath
         );
     }
@@ -203,7 +203,7 @@ class PackageBuilderTasksCest
         $this->callRoboCommand('build:unpacked', realpath($sourcePath));
 
         $I->assertFileNotExists(
-            realpath($sourcePath . '/dist/publishpress-dummy-2.4.0.zip'),
+            $sourcePath . '/dist/publishpress-dummy-2.4.0.zip',
             'There should not be a ZIP file in the path ' . $sourcePath
         );
 
@@ -224,12 +224,12 @@ class PackageBuilderTasksCest
         $this->callRoboCommand('build', realpath($sourcePath));
 
         $I->assertFileExists(
-            realpath($sourcePath . '/dist/publishpress-dummy-2.4.0.zip'),
+            $sourcePath . '/dist/publishpress-dummy-2.4.0.zip',
             'There should be a ZIP file in the path ' . $sourcePath
         );
 
         $I->assertFileNotExists(
-            realpath($sourcePath . '/dist/publishpress-dummy'),
+            $sourcePath . '/dist/publishpress-dummy',
             'The temp folder should be removed after building the zip'
         );
     }
