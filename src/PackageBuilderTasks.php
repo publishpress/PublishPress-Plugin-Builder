@@ -242,7 +242,7 @@ abstract class PackageBuilderTasks extends Tasks
         $this->_mirrorDir($sourcePath, $fullDestinationPath);
 
         // Runs composer update --no-dev for removing any dev requirements from the vendor folder
-        $this->taskComposerUpdate($composerPath)
+        $this->taskComposerInstall($composerPath)
              ->optimizeAutoloader()
              ->noInteraction()
              ->noSuggest()
