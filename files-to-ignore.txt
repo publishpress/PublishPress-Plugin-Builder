@@ -35,8 +35,6 @@ build.xml
 builder.yml
 codeception.dist.yml
 codeception.yml
-composer.json
-composer.lock
 contributing.md
 contributing.txt
 dist
