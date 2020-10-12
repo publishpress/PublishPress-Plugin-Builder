@@ -222,7 +222,7 @@ abstract class PackageBuilderTasks extends Tasks
                     $this->versionConstantName,
                     $newVersion
                 );
-                $this->say('Updated version number in the file defines.php');
+                $this->say('Updated version number in the file ' . $fileName);
             }
         }
     }
