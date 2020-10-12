@@ -4,7 +4,7 @@ class PackageBuilderTasksCest
 {
     private $filesToIgnore = [];
 
-    public function _before(UnitTester $I)
+    public function _before(IntegrationTester $I)
     {
         $this->filesToIgnore = $this->getListOfFilesToIgnore();
     }
@@ -39,7 +39,7 @@ class PackageBuilderTasksCest
         return $output;
     }
 
-    public function testBuildTask_ShouldCreateAZipFileInTheDistDirNamedWithPluginNameAndVersion(UnitTester $I)
+    public function testBuildTask_ShouldCreateAZipFileInTheDistDirNamedWithPluginNameAndVersion(IntegrationTester $I)
     {
         $I->wantToTest(
             'the build task with no custom destination, should create a ZIP file in the ./dist dir with the plugin name and version'
@@ -55,7 +55,7 @@ class PackageBuilderTasksCest
         );
     }
 
-    public function testBuildTask_ShouldCreateZipFileWithNoIgnoredFiles(UnitTester $I)
+    public function testBuildTask_ShouldCreateZipFileWithNoIgnoredFiles(IntegrationTester $I)
     {
         $I->wantToTest('the build task with no custom destination, should create a ZIP file without any ignore file');
 
@@ -68,7 +68,7 @@ class PackageBuilderTasksCest
         $zip = new \PhpZip\ZipFile();
         try {
             if (!file_exists($unzippedPath)) {
-                mkdir($unzippedPath, 0644, true);
+                mkdir($unzippedPath, 0777, true);
             }
 
             $zip->openFile($sourcePath . '/dist/publishpress-dummy-2.4.0.zip');
@@ -86,7 +86,7 @@ class PackageBuilderTasksCest
     }
 
     public function testBuildTask_WithCustomDestination_ShouldCreateAZipFileInTheSpecificDirNamedWithPluginNameAndVersion(
-        UnitTester $I
+        IntegrationTester $I
     ) {
         $I->wantToTest(
             'the build task with a custom destination, should create a ZIP file in the specific dir with the plugin name and version'
@@ -107,7 +107,7 @@ class PackageBuilderTasksCest
     }
 
     public function testBuildTask_WithCustomFilesToIgnore_ShouldCreateAZipFileWithoutTheIgnoredFiles(
-        UnitTester $I
+        IntegrationTester $I
     ) {
         $I->wantToTest(
             'the build task with a custom list of files to ignore, should create a ZIP file without the ignored files'
@@ -122,7 +122,7 @@ class PackageBuilderTasksCest
         $zip = new \PhpZip\ZipFile();
         try {
             if (!file_exists($unzippedPath)) {
-                mkdir($unzippedPath, 0644, true);
+                mkdir($unzippedPath, 0777, true);
             }
 
             $zip->openFile($sourcePath . '/dist/publishpress-dummy-2.4.0.zip');
@@ -146,7 +146,7 @@ class PackageBuilderTasksCest
     }
 
     public function testBuildTask_WithDevRequirements_ShouldCreateAZipFileWithoutTheDevRequirements(
-        UnitTester $I
+        IntegrationTester $I
     ) {
         $I->wantToTest(
             'the build task with some dev required libraries, should create a ZIP file without the dev requirements'
@@ -161,7 +161,7 @@ class PackageBuilderTasksCest
         $zip = new \PhpZip\ZipFile();
         try {
             if (!file_exists($unzippedPath)) {
-                mkdir($unzippedPath, 0644, true);
+                mkdir($unzippedPath, 0777, true);
             }
 
             $zip->openFile($sourcePath . '/dist/publishpress-dummy-2.4.0.zip');
@@ -192,7 +192,7 @@ class PackageBuilderTasksCest
         $I->assertStringNotContainsString('PHPMD', $autoloaderText);
     }
 
-    public function testBuildNoPackTask_ShouldNotCreateAZipFileInTheDistDirButOnlyAFolderInTheDistFolder(UnitTester $I)
+    public function testBuildNoPackTask_ShouldNotCreateAZipFileInTheDistDirButOnlyAFolderInTheDistFolder(IntegrationTester $I)
     {
         $I->wantToTest(
             'the build-unpacked task, should not create a ZIP file in the ./dist dir but only a folder in the dist dir'
@@ -213,7 +213,7 @@ class PackageBuilderTasksCest
         );
     }
 
-    public function testBuildTask_ShouldDeleteTheTmpFolderAfterBuildingTheZipFile(UnitTester $I)
+    public function testBuildTask_ShouldDeleteTheTmpFolderAfterBuildingTheZipFile(IntegrationTester $I)
     {
         $I->wantToTest(
             'the build task, should delete the tmp folder after building the zip file'
@@ -234,7 +234,7 @@ class PackageBuilderTasksCest
         );
     }
 
-    public function testVersionTask_WithNoArgument_ShouldDisplayTheCurrentVersionNumber(UnitTester $I)
+    public function testVersionTask_WithNoArgument_ShouldDisplayTheCurrentVersionNumber(IntegrationTester $I)
     {
         $I->wantToTest(
             'the version task with no argument, should display the current version number only'
@@ -243,7 +243,7 @@ class PackageBuilderTasksCest
         $tmpDirPath = __DIR__ . '/../_data/build-test/dist/publishpress-dummy';
 
         if (!file_exists($tmpDirPath)) {
-            mkdir($tmpDirPath, 0644, true);
+            mkdir($tmpDirPath, 0777, true);
         }
 
         copy(__DIR__ . '/../_data/build-test/readme.txt', $tmpDirPath . '/readme.txt');
@@ -256,7 +256,7 @@ class PackageBuilderTasksCest
         $I->assertStringContainsString('Plugin Version: 2.4.0', $output);
     }
 
-    public function testVersionTask_WithArgument_ShouldDisplayTheNewVersionNumber(UnitTester $I)
+    public function testVersionTask_WithArgument_ShouldDisplayTheNewVersionNumber(IntegrationTester $I)
     {
         $I->wantToTest(
             'the version task with a new version as argument, should update the plugin version number'
@@ -265,7 +265,7 @@ class PackageBuilderTasksCest
         $tmpDirPath = __DIR__ . '/../_data/build-test/dist/publishpress-dummy';
 
         if (!file_exists($tmpDirPath)) {
-            mkdir($tmpDirPath, 0644, true);
+            mkdir($tmpDirPath, 0777, true);
         }
 
         copy(__DIR__ . '/../_data/build-test/readme.txt', $tmpDirPath . '/readme.txt');
@@ -282,7 +282,7 @@ class PackageBuilderTasksCest
         $I->assertStringContainsString('Updating plugin version to 3.0.0-beta.1', $output);
     }
 
-    public function testVersionTask_WithUnstableVersion_ShouldUpdateTheVersionNumberInThePluginFile(UnitTester $I)
+    public function testVersionTask_WithUnstableVersion_ShouldUpdateTheVersionNumberInThePluginFile(IntegrationTester $I)
     {
         $I->wantToTest(
             'the version task with a unstable version as argument, should update the plugin version number in the plugin file'
@@ -291,7 +291,7 @@ class PackageBuilderTasksCest
         $tmpDirPath = __DIR__ . '/../_data/build-test/dist/publishpress-dummy';
 
         if (!file_exists($tmpDirPath)) {
-            mkdir($tmpDirPath, 0644, true);
+            mkdir($tmpDirPath, 0777, true);
         }
 
         copy(__DIR__ . '/../_data/build-test/readme.txt', $tmpDirPath . '/readme.txt');
@@ -306,7 +306,7 @@ class PackageBuilderTasksCest
         $I->assertStringContainsString('* Version: 3.0.0-beta.1', $pluginFileContents);
     }
 
-    public function testVersionTask_WithUnstableVersion_ShouldNotUpdateTheVersionNumberInTheReadmeFile(UnitTester $I)
+    public function testVersionTask_WithUnstableVersion_ShouldNotUpdateTheVersionNumberInTheReadmeFile(IntegrationTester $I)
     {
         $I->wantToTest(
             'the version task with a unstable version as argument, should update the plugin version number in the readme.txt file'
@@ -315,7 +315,7 @@ class PackageBuilderTasksCest
         $tmpDirPath = __DIR__ . '/../_data/build-test/dist/publishpress-dummy';
 
         if (!file_exists($tmpDirPath)) {
-            mkdir($tmpDirPath, 0644, true);
+            mkdir($tmpDirPath, 0777, true);
         }
 
         copy(__DIR__ . '/../_data/build-test/readme.txt', $tmpDirPath . '/readme.txt');
@@ -330,7 +330,7 @@ class PackageBuilderTasksCest
         $I->assertStringContainsString('Stable tag: 2.4.0', $pluginFileContents);
     }
 
-    public function testVersionTask_WithStableVersion_ShouldUpdateTheVersionNumberInTheReadmeFile(UnitTester $I)
+    public function testVersionTask_WithStableVersion_ShouldUpdateTheVersionNumberInTheReadmeFile(IntegrationTester $I)
     {
         $I->wantToTest(
             'the version task with a stable version as argument, should update the plugin version number in the readme.txt file'
@@ -339,7 +339,7 @@ class PackageBuilderTasksCest
         $tmpDirPath = __DIR__ . '/../_data/build-test/dist/publishpress-dummy';
 
         if (!file_exists($tmpDirPath)) {
-            mkdir($tmpDirPath, 0644, true);
+            mkdir($tmpDirPath, 0777, true);
         }
 
         copy(__DIR__ . '/../_data/build-test/readme.txt', $tmpDirPath . '/readme.txt');
@@ -354,7 +354,7 @@ class PackageBuilderTasksCest
         $I->assertStringContainsString('Stable tag: 3.0.0', $pluginFileContents);
     }
 
-    public function testVersionTask_WithStableVersion_ShouldUpdateTheVersionNumberInThePluginFile(UnitTester $I)
+    public function testVersionTask_WithStableVersion_ShouldUpdateTheVersionNumberInThePluginFile(IntegrationTester $I)
     {
         $I->wantToTest(
             'the version task with a stable version as argument, should update the plugin version number in the plugin file'
@@ -363,7 +363,7 @@ class PackageBuilderTasksCest
         $tmpDirPath = __DIR__ . '/../_data/build-test/dist/publishpress-dummy';
 
         if (!file_exists($tmpDirPath)) {
-            mkdir($tmpDirPath, 0644, true);
+            mkdir($tmpDirPath, 0777, true);
         }
 
         copy(__DIR__ . '/../_data/build-test/readme.txt', $tmpDirPath . '/readme.txt');
@@ -387,7 +387,7 @@ class PackageBuilderTasksCest
      * @example ["4.0.0-feature.142-testing"]
      */
     public function testVersionTask_WithVersionNumber_ShouldUpdateTheVersionNumberInTheConstant(
-        UnitTester $I,
+        IntegrationTester $I,
         \Codeception\Example $example
     ) {
         $I->wantToTest(
@@ -398,7 +398,7 @@ class PackageBuilderTasksCest
         $tmpDirPath = __DIR__ . '/../_data/build-version-const-test/dist/publishpress-dummy';
 
         if (!file_exists($tmpDirPath)) {
-            mkdir($tmpDirPath, 0644, true);
+            mkdir($tmpDirPath, 0777, true);
         }
 
         copy(__DIR__ . '/../_data/build-version-const-test/readme.txt', $tmpDirPath . '/readme.txt');
@@ -429,7 +429,7 @@ class PackageBuilderTasksCest
      * @example ["4.0.0-feature.142-testing"]
      */
     public function testVersionTask_WithVersionNumberAndCustomFiles_ShouldUpdateTheVersionNumberInTheConstantOnEachFile(
-        UnitTester $I,
+        IntegrationTester $I,
         \Codeception\Example $example
     ) {
         $I->wantToTest(
@@ -441,7 +441,7 @@ class PackageBuilderTasksCest
         $tmpDirPath = $basePath . 'dist/publishpress-dummy/';
 
         if (!file_exists($tmpDirPath)) {
-            mkdir($tmpDirPath, 0644, true);
+            mkdir($tmpDirPath, 0777, true);
         }
 
         copy($basePath . 'readme.txt', $tmpDirPath . 'readme.txt');
@@ -455,7 +455,7 @@ class PackageBuilderTasksCest
         copy($basePath . 'includes.php', $tmpDirPath . 'includes.php');
 
         if (!file_exists($tmpDirPath . 'subfolder')) {
-            mkdir($tmpDirPath . 'subfolder', 0644, true);
+            mkdir($tmpDirPath . 'subfolder', 0777, true);
         }
 
         copy($basePath . 'subfolder/constants.php', $tmpDirPath . 'subfolder/constants.php');
