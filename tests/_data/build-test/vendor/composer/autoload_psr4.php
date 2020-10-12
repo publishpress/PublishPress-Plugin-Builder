@@ -31,7 +31,6 @@ return array(
     'PhpZip\\' => array($vendorDir . '/nelexa/zip/src'),
     'League\\Container\\' => array($vendorDir . '/league/container/src'),
     'Interop\\Container\\' => array($vendorDir . '/container-interop/container-interop/src/Interop/Container'),
-    'Grasmash\\YamlExpander\\' => array($vendorDir . '/grasmash/yaml-expander/src'),
     'Grasmash\\Expander\\' => array($vendorDir . '/grasmash/expander/src'),
     'Consolidation\\OutputFormatters\\' => array($vendorDir . '/consolidation/output-formatters/src'),
     'Consolidation\\Log\\' => array($vendorDir . '/consolidation/log/src'),

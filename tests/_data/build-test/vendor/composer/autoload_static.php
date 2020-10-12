@@ -60,7 +60,6 @@ class ComposerStaticInit0d71f3f3b49289c471d5923b7df061e4
         ),
         'G' => 
         array (
-            'Grasmash\\YamlExpander\\' => 22,
             'Grasmash\\Expander\\' => 18,
         ),
         'C' => 
@@ -172,10 +171,6 @@ class ComposerStaticInit0d71f3f3b49289c471d5923b7df061e4
         'Interop\\Container\\' => 
         array (
             0 => __DIR__ . '/..' . '/container-interop/container-interop/src/Interop/Container',
-        ),
-        'Grasmash\\YamlExpander\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/grasmash/yaml-expander/src',
         ),
         'Grasmash\\Expander\\' => 
         array (

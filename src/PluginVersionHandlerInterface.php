@@ -35,5 +35,5 @@ interface PluginVersionHandlerInterface
 
     public function updateVersionInThePluginFile(string $pluginPath, string $pluginName, string $version): void;
 
-    public function updateVersionInTheDefinesFile(string $pluginPath, string $constantName, string $version): void;
+    public function updateVersionInACustomFile(string $pluginPath, string $fileName, string $constantName, string $version): void;
 }

@@ -47,11 +47,11 @@ class PackageBuilderTasksCest
 
         $sourcePath = __DIR__ . '/../_data/build-test';
 
-        $this->callRoboCommand('build', realpath($sourcePath));
+        $roboOutput = $this->callRoboCommand('build', realpath($sourcePath));
 
         $I->assertFileExists(
             $sourcePath . '/dist/publishpress-dummy-2.4.0.zip',
-            'There should be a ZIP file in the path ' . $sourcePath
+            'There should be a ZIP file in the path ' . $sourcePath . ".\nRobo command output:\n" . $roboOutput
         );
     }
 
@@ -416,6 +416,68 @@ class PackageBuilderTasksCest
         $I->assertStringContainsString(
             'define(\'PUBLISHPRESS_DUMMY_VERSION\', \'' . $example[0] . '\');',
             $pluginFileContents
+        );
+    }
+
+    /**
+     * @example ["3.0.1"]
+     * @example ["3.3.1"]
+     * @example ["3.3.4-beta.1"]
+     * @example ["3.3.4-alpha.1"]
+     * @example ["4.0.0-rc.1"]
+     * @example ["4.0.0-feature.142-testing"]
+     */
+    public function testVersionTask_WithVersionNumberAndCustomFiles_ShouldUpdateTheVersionNumberInTheConstantOnEachFile(
+        UnitTester $I,
+        \Codeception\Example $example
+    ) {
+        $I->wantToTest(
+            'the version task with a stable version as argument, should update the plugin version number in the files we defined'
+        );
+
+        $basePath = __DIR__ . '/../_data/build-version-custom-file-test/';
+
+        $tmpDirPath = $basePath . 'dist/publishpress-dummy/';
+
+        if (!file_exists($tmpDirPath)) {
+            mkdir($tmpDirPath);
+        }
+
+        copy($basePath . 'readme.txt', $tmpDirPath . 'readme.txt');
+        copy(
+            $basePath . 'publishpress-dummy.php',
+            $tmpDirPath . 'publishpress-dummy.php'
+        );
+        copy($basePath . 'RoboFile.php', $tmpDirPath . 'RoboFile.php');
+        copy($basePath . 'composer.json', $tmpDirPath . 'composer.json');
+        copy($basePath . 'defines.php', $tmpDirPath . 'defines.php');
+        copy($basePath . 'includes.php', $tmpDirPath . 'includes.php');
+
+        if (!file_exists($tmpDirPath . 'subfolder')) {
+            mkdir($tmpDirPath . 'subfolder');
+        }
+
+        copy($basePath . 'subfolder/constants.php', $tmpDirPath . 'subfolder/constants.php');
+
+        $this->callRoboCommand('version ' . $example[0], realpath($tmpDirPath), '../../../../../vendor/bin/robo');
+
+        $definesFileContents = file_get_contents($tmpDirPath . 'defines.php');
+        $includesFileContents = file_get_contents($tmpDirPath . 'includes.php');
+        $constantsFileContents = file_get_contents($tmpDirPath . 'subfolder/constants.php');
+
+        $I->assertStringContainsString(
+            'define(\'PUBLISHPRESS_DUMMY_VERSION\', \'' . $example[0] . '\');',
+            $definesFileContents
+        );
+
+        $I->assertStringContainsString(
+            'define(\'PUBLISHPRESS_DUMMY_VERSION\', \'' . $example[0] . '\');',
+            $includesFileContents
+        );
+
+        $I->assertStringContainsString(
+            'define(\'PUBLISHPRESS_DUMMY_VERSION\', \'' . $example[0] . '\');',
+            $constantsFileContents
         );
     }
 }

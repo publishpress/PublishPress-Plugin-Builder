@@ -90,6 +90,11 @@ abstract class PackageBuilderTasks extends Tasks
     private $versionConstantName = 'DUMMY_CONSTANT_NAME';
 
     /**
+     * @var string[]
+     */
+    private $versionConstantFiles = ['defines.php', 'includes.php'];
+
+    /**
      * PackageBuilderTasks constructor.
      *
      *
@@ -120,6 +125,11 @@ abstract class PackageBuilderTasks extends Tasks
     protected function setVersionConstantName(string $constantName): void
     {
         $this->versionConstantName = $constantName;
+    }
+
+    protected function setVersionConstantFiles(array $fileNames): void
+    {
+        $this->versionConstantFiles = $fileNames;
     }
 
     private function settingsFileExists(): string
@@ -204,15 +214,16 @@ abstract class PackageBuilderTasks extends Tasks
         $this->pluginVersionHandler->updateVersionInThePluginFile($this->sourcePath, $this->pluginName, $newVersion);
         $this->say('Updated version number in the file ' . $this->pluginName);
 
-        if (file_exists($this->sourcePath . '/defines.php')) {
-            // and if no constant define?
-
-            $this->pluginVersionHandler->updateVersionInTheDefinesFile(
-                $this->sourcePath,
-                $this->versionConstantName,
-                $newVersion
-            );
-            $this->say('Updated version number in the file defines.php');
+        foreach ($this->versionConstantFiles as $fileName) {
+            if (file_exists($this->sourcePath . '/' . $fileName)) {
+                $this->pluginVersionHandler->updateVersionInACustomFile(
+                    $this->sourcePath,
+                    $fileName,
+                    $this->versionConstantName,
+                    $newVersion
+                );
+                $this->say('Updated version number in the file defines.php');
+            }
         }
     }
 
