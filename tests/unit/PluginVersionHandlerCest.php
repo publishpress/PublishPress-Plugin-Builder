@@ -236,7 +236,7 @@ class PluginVersionHandlerCest
 
         $handler = new \PublishPressBuilder\PluginVersionHandler();
 
-        $handler->updateVersionInTheDefinesFile($tmpDirPath, 'PUBLISHPRESS_DUMMY_VERSION', $example[0]);
+        $handler->updateVersionInACustomFile($tmpDirPath, 'defines.php', 'PUBLISHPRESS_DUMMY_VERSION', $example[0]);
 
         $newVersion = $example[0];
 

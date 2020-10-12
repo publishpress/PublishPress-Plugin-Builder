@@ -31,8 +31,7 @@ class ComposerFileReader implements ComposerFileReaderInterface
         $composerFileJson = json_decode($composerFileJson);
 
         $pluginName = explode('/', $composerFileJson->name);
-        $pluginName = count($pluginName) > 1 ? $pluginName[count($pluginName) - 1] : $pluginName[0];
 
-        return $pluginName;
+        return count($pluginName) > 1 ? $pluginName[count($pluginName) - 1] : $pluginName[0];
     }
 }
