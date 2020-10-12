@@ -1,0 +1,19 @@
+name: Unit Tests
+
+on:
+  push:
+    branches: [ master, development ]
+  pull_request:
+    branches: [ master, development ]
+
+jobs:
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Composer install
+        uses: php-actions/composer@v1
+      - name: Run codeception tests
+        run: vendor/bin/codecept run unit
