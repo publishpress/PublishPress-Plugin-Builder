@@ -153,7 +153,7 @@ class PluginVersionHandlerCest
         $tmpDirPath    = sys_get_temp_dir() . '/' . microtime(true);
         $tmpFile       = $tmpDirPath . '/readme.txt';
 
-        mkdir($tmpDirPath);
+        mkdir($tmpDirPath, 0777, true);
         copy($dummyFilePath, $tmpFile);
 
         $handler = new \PublishPressBuilder\PluginVersionHandler();
@@ -209,5 +209,40 @@ class PluginVersionHandlerCest
 
         $I->assertStringNotContainsString('* Version: 2.4.0', $tmpFileContent);
         $I->assertStringContainsString('* Version: ' . $newVersion, $tmpFileContent);
+    }
+
+    /**
+     * @example ["3.4.0"]
+     * @example ["3.4.2"]
+     * @example ["3.14.2"]
+     * @example ["3.14.52"]
+     * @example ["13.14.5"]
+     * @example ["3.4.0-alpha.1"]
+     * @example ["3.4.0-beta.1"]
+     * @example ["3.54.0-beta.1"]
+     * @example ["3.54.0-rc.1"]
+     * @example ["3.54.0-rc.2"]
+     */
+    public function updateVersionInThePluginFile_ShouldUpdateTheVersionInTheDefinesFile_ForNonSpecifiedFileList(
+        UnitTester $I,
+        \Codeception\Example $example
+    ) {
+        $dummyFilePath = __DIR__ . '/../_data/build-version-const-test/defines.php';
+        $tmpDirPath    = sys_get_temp_dir() . '/' . microtime(true);
+        $tmpFile       = $tmpDirPath . '/defines.php';
+
+        mkdir($tmpDirPath);
+        copy($dummyFilePath, $tmpFile);
+
+        $handler = new \PublishPressBuilder\PluginVersionHandler();
+
+        $handler->updateVersionInACustomFile($tmpDirPath, 'defines.php', 'PUBLISHPRESS_DUMMY_VERSION', $example[0]);
+
+        $newVersion = $example[0];
+
+        $tmpFileContent = file_get_contents($tmpFile);
+
+        $I->assertStringNotContainsString('define(\'PUBLISHPRESS_DUMMY_VERSION\', \'2.4.0\');', $tmpFileContent);
+        $I->assertStringContainsString(sprintf('define(\'PUBLISHPRESS_DUMMY_VERSION\', \'%s\');', $newVersion), $tmpFileContent);
     }
 }

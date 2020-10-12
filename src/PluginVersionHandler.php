@@ -58,10 +58,14 @@ class PluginVersionHandler
         );
     }
 
-    public function updateVersionInTheDefinesFile(string $pluginPath, string $constantName, string $version): void
-    {
+    public function updateVersionInACustomFile(
+        string $pluginPath,
+        $fileName,
+        string $constantName,
+        string $version
+    ): void {
         $this->replaceTextInFile(
-            $pluginPath . '/defines.php',
+            $pluginPath . '/' . $fileName,
             '/define\(\'' . $constantName . '\', \'[0-9]+\.[0-9]+\.[0-9]+([0-9a-zA-Z\-\.]*)?\'\);/',
             'define(\'' . $constantName . '\', \'' . $version . '\');'
         );

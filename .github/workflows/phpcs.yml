@@ -1,0 +1,19 @@
+name: Code Style (PSR12)
+
+on:
+  push:
+    branches: [ master, development ]
+  pull_request:
+    branches: [ master, development ]
+
+jobs:
+  phpcs:
+    name: Run PHPCS
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Composer install
+        uses: php-actions/composer@v1
+      - name: phpcs
+        run: vendor/bin/phpcs --standard=PSR12 ./src/
