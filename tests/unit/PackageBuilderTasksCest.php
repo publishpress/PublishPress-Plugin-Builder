@@ -68,7 +68,7 @@ class PackageBuilderTasksCest
         $zip = new \PhpZip\ZipFile();
         try {
             if (!file_exists($unzippedPath)) {
-                mkdir($unzippedPath);
+                mkdir($unzippedPath, 0644, true);
             }
 
             $zip->openFile($sourcePath . '/dist/publishpress-dummy-2.4.0.zip');
@@ -122,7 +122,7 @@ class PackageBuilderTasksCest
         $zip = new \PhpZip\ZipFile();
         try {
             if (!file_exists($unzippedPath)) {
-                mkdir($unzippedPath);
+                mkdir($unzippedPath, 0644, true);
             }
 
             $zip->openFile($sourcePath . '/dist/publishpress-dummy-2.4.0.zip');
@@ -161,7 +161,7 @@ class PackageBuilderTasksCest
         $zip = new \PhpZip\ZipFile();
         try {
             if (!file_exists($unzippedPath)) {
-                mkdir($unzippedPath);
+                mkdir($unzippedPath, 0644, true);
             }
 
             $zip->openFile($sourcePath . '/dist/publishpress-dummy-2.4.0.zip');
@@ -243,7 +243,7 @@ class PackageBuilderTasksCest
         $tmpDirPath = __DIR__ . '/../_data/build-test/dist/publishpress-dummy';
 
         if (!file_exists($tmpDirPath)) {
-            mkdir($tmpDirPath);
+            mkdir($tmpDirPath, 0644, true);
         }
 
         copy(__DIR__ . '/../_data/build-test/readme.txt', $tmpDirPath . '/readme.txt');
@@ -265,7 +265,7 @@ class PackageBuilderTasksCest
         $tmpDirPath = __DIR__ . '/../_data/build-test/dist/publishpress-dummy';
 
         if (!file_exists($tmpDirPath)) {
-            mkdir($tmpDirPath);
+            mkdir($tmpDirPath, 0644, true);
         }
 
         copy(__DIR__ . '/../_data/build-test/readme.txt', $tmpDirPath . '/readme.txt');
@@ -291,7 +291,7 @@ class PackageBuilderTasksCest
         $tmpDirPath = __DIR__ . '/../_data/build-test/dist/publishpress-dummy';
 
         if (!file_exists($tmpDirPath)) {
-            mkdir($tmpDirPath);
+            mkdir($tmpDirPath, 0644, true);
         }
 
         copy(__DIR__ . '/../_data/build-test/readme.txt', $tmpDirPath . '/readme.txt');
@@ -315,7 +315,7 @@ class PackageBuilderTasksCest
         $tmpDirPath = __DIR__ . '/../_data/build-test/dist/publishpress-dummy';
 
         if (!file_exists($tmpDirPath)) {
-            mkdir($tmpDirPath);
+            mkdir($tmpDirPath, 0644, true);
         }
 
         copy(__DIR__ . '/../_data/build-test/readme.txt', $tmpDirPath . '/readme.txt');
@@ -339,7 +339,7 @@ class PackageBuilderTasksCest
         $tmpDirPath = __DIR__ . '/../_data/build-test/dist/publishpress-dummy';
 
         if (!file_exists($tmpDirPath)) {
-            mkdir($tmpDirPath);
+            mkdir($tmpDirPath, 0644, true);
         }
 
         copy(__DIR__ . '/../_data/build-test/readme.txt', $tmpDirPath . '/readme.txt');
@@ -363,7 +363,7 @@ class PackageBuilderTasksCest
         $tmpDirPath = __DIR__ . '/../_data/build-test/dist/publishpress-dummy';
 
         if (!file_exists($tmpDirPath)) {
-            mkdir($tmpDirPath);
+            mkdir($tmpDirPath, 0644, true);
         }
 
         copy(__DIR__ . '/../_data/build-test/readme.txt', $tmpDirPath . '/readme.txt');
@@ -391,13 +391,14 @@ class PackageBuilderTasksCest
         \Codeception\Example $example
     ) {
         $I->wantToTest(
-            'the version task with a stable version as argument, should update the plugin version number in the defines file'
+            'the version task with a stable version as argument, should update the plugin version number 
+            in the defines file'
         );
 
         $tmpDirPath = __DIR__ . '/../_data/build-version-const-test/dist/publishpress-dummy';
 
         if (!file_exists($tmpDirPath)) {
-            mkdir($tmpDirPath);
+            mkdir($tmpDirPath, 0644, true);
         }
 
         copy(__DIR__ . '/../_data/build-version-const-test/readme.txt', $tmpDirPath . '/readme.txt');
@@ -440,7 +441,7 @@ class PackageBuilderTasksCest
         $tmpDirPath = $basePath . 'dist/publishpress-dummy/';
 
         if (!file_exists($tmpDirPath)) {
-            mkdir($tmpDirPath);
+            mkdir($tmpDirPath, 0644, true);
         }
 
         copy($basePath . 'readme.txt', $tmpDirPath . 'readme.txt');
@@ -454,7 +455,7 @@ class PackageBuilderTasksCest
         copy($basePath . 'includes.php', $tmpDirPath . 'includes.php');
 
         if (!file_exists($tmpDirPath . 'subfolder')) {
-            mkdir($tmpDirPath . 'subfolder');
+            mkdir($tmpDirPath . 'subfolder', 0644, true);
         }
 
         copy($basePath . 'subfolder/constants.php', $tmpDirPath . 'subfolder/constants.php');

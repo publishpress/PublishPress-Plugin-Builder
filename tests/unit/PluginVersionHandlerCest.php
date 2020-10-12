@@ -153,7 +153,7 @@ class PluginVersionHandlerCest
         $tmpDirPath    = sys_get_temp_dir() . '/' . microtime(true);
         $tmpFile       = $tmpDirPath . '/readme.txt';
 
-        mkdir($tmpDirPath);
+        mkdir($tmpDirPath, 0644, true);
         copy($dummyFilePath, $tmpFile);
 
         $handler = new \PublishPressBuilder\PluginVersionHandler();
