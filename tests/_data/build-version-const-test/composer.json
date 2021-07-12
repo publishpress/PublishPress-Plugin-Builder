@@ -29,5 +29,9 @@
   "require-dev": {
     "consolidation/robo": "^2.0",
     "publishpress/publishpress-plugin-builder": "*"
+  },
+  "dist": {
+    "url": "https://github.com/publishpress/publishpress-dummy/releases/download/v2.4.0/publishpress-dummy-2.4.0.zip",
+    "type": "zip"
   }
 }

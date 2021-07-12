@@ -245,4 +245,44 @@ class PluginVersionHandlerCest
         $I->assertStringNotContainsString('define(\'PUBLISHPRESS_DUMMY_VERSION\', \'2.4.0\');', $tmpFileContent);
         $I->assertStringContainsString(sprintf('define(\'PUBLISHPRESS_DUMMY_VERSION\', \'%s\');', $newVersion), $tmpFileContent);
     }
+
+    /**
+     * @example ["3.4.0"]
+     * @example ["3.4.2"]
+     * @example ["3.14.2"]
+     * @example ["3.14.52"]
+     * @example ["13.14.5"]
+     * @example ["3.4.0-alpha.1"]
+     * @example ["3.4.0-beta.1"]
+     * @example ["3.54.0-beta.1"]
+     * @example ["3.54.0-rc.1"]
+     * @example ["3.54.0-rc.2"]
+     */
+    public function updateVersionOnDistUrlInTheComposerFile_ShouldUpdateTheVersionOnDistUrlInTheComposerFile(
+        UnitTester $I,
+        \Codeception\Example $example
+    ) {
+        $tmpDirPath    = sys_get_temp_dir() . '/' . microtime(true);
+
+        mkdir($tmpDirPath);
+        copy(__DIR__ . '/../_data/composer-files/dist-version/composer.json', $tmpDirPath . '/composer.json');
+        copy(__DIR__ . '/../_data/composer-files/dist-version/publishpress-dummy.php', $tmpDirPath . '/publishpress-dummy.php');
+
+        $handler = new \PublishPressBuilder\PluginVersionHandler();
+
+        $handler->updateVersionInComposerDistUrl($tmpDirPath, $example[0]);
+
+        $newVersion = $example[0];
+
+        $tmpFileContent = file_get_contents($tmpDirPath . '/composer.json');
+        $tmpFileContent = json_decode($tmpFileContent);
+
+        $I->assertEquals(
+            sprintf(
+                'https://github.com/publishpress/publishpress-dummy/releases/download/v%1$s/publishpress-dummy-%1$s.zip',
+                $newVersion
+            ),
+            $tmpFileContent->dist->url
+        );
+    }
 }

@@ -83,4 +83,19 @@ class PluginVersionHandler
         // Store in the file
         file_put_contents($path, $fileContent);
     }
+
+    public function updateVersionInComposerDistUrl(string $projectPath, string $version): void
+    {
+        $composerFileJson = trim(file_get_contents($projectPath . '/composer.json'));
+        $composerFileJson = json_decode($composerFileJson);
+
+        if (isset($composerFileJson->dist) && isset($composerFileJson->dist->url)) {
+            $utils      = new ComposerFileReader();
+            $pluginName = $utils->getPluginName($projectPath);
+            $pluginVersion = $this->getPluginVersion($projectPath . '/' . $pluginName . '.php');
+
+            $composerFileJson->dist->url = str_replace($pluginVersion, $version, $composerFileJson->dist->url);
+            file_put_contents($projectPath . '/composer.json', json_encode($composerFileJson));
+        }
+    }
 }

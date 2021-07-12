@@ -211,6 +211,9 @@ abstract class PackageBuilderTasks extends Tasks
             $this->say('Updated stable tag in the file readme.txt');
         }
 
+        $this->pluginVersionHandler->updateVersionInComposerDistUrl($this->sourcePath, $newVersion);
+        $this->say('Updated the dist url in the composer.json file');
+
         $this->pluginVersionHandler->updateVersionInThePluginFile($this->sourcePath, $this->pluginName, $newVersion);
         $this->say('Updated version number in the file ' . $this->pluginName);
 
