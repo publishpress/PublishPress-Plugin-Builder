@@ -41,4 +41,6 @@ interface PluginVersionHandlerInterface
         string $constantName,
         string $version
     ): void;
+
+    public function updateVersionInComposerDistUrl(string $projectPath, string $version): void;
 }

@@ -462,6 +462,7 @@ class PackageBuilderTasksCest
 
         $this->callRoboCommand('version ' . $example[0], realpath($tmpDirPath), '../../../../../vendor/bin/robo');
 
+        $composerContents = json_decode(file_get_contents($tmpDirPath . 'composer.json'));
         $definesFileContents = file_get_contents($tmpDirPath . 'defines.php');
         $includesFileContents = file_get_contents($tmpDirPath . 'includes.php');
         $constantsFileContents = file_get_contents($tmpDirPath . 'subfolder/constants.php');
@@ -479,6 +480,14 @@ class PackageBuilderTasksCest
         $I->assertStringContainsString(
             'define(\'PUBLISHPRESS_DUMMY_VERSION\', \'' . $example[0] . '\');',
             $constantsFileContents
+        );
+
+        $I->assertStringContainsString(
+            sprintf(
+                'https://github.com/publishpress/publishpress-dummy/releases/download/v%1$s/publishpress-dummy-%1$s.zip',
+            $example[0]
+            ),
+            $composerContents->dist->url
         );
     }
 }

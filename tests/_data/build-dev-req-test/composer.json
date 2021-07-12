@@ -21,5 +21,9 @@
   "require-dev": {
     "phpmd/phpmd": "^2.8",
     "consolidation/robo": "^2.0"
+  },
+  "dist": {
+    "url": "https://github.com/publishpress/publishpress-dummy/releases/download/v2.4.0/publishpress-dummy-2.4.0.zip",
+    "type": "zip"
   }
 }
