@@ -15,3 +15,5 @@ tests/_data/build-move-test/dist/*
 tests/_data/build-move-test/vendor/
 tests/_data/build-version-const-test/dist/*
 tests/_data/build-version-const-test/vendor/
+tests/_data/build-version-custom-file-test/vendor/
+tests/_data/build-version-custom-file-test/dist/*

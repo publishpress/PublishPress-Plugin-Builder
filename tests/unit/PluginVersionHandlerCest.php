@@ -1,4 +1,7 @@
 <?php
+
+use PublishPressBuilder\PluginVersionHandler;
+
 /**
  * GNU General Public License, Free Software Foundation <http://creativecommons.org/licenses/GPL/2.0/>
  *
@@ -29,7 +32,7 @@ class PluginVersionHandlerCest
 
         $filePath = __DIR__ . '/../_data/plugin-files/plugin-stable-version.php';
 
-        $utils         = new \PublishPressBuilder\PluginVersionHandler();
+        $utils         = new PluginVersionHandler();
         $pluginVersion = $utils->getPluginVersion($filePath);
 
         $I->assertEquals('2.4.0', $pluginVersion);
@@ -44,7 +47,7 @@ class PluginVersionHandlerCest
 
         $filePath = __DIR__ . '/../_data/plugin-files/plugin-unstable-version.php';
 
-        $utils         = new \PublishPressBuilder\PluginVersionHandler();
+        $utils         = new PluginVersionHandler();
         $pluginVersion = $utils->getPluginVersion($filePath);
 
         $I->assertEquals('2.4.0-beta.1', $pluginVersion);
@@ -69,7 +72,7 @@ class PluginVersionHandlerCest
             'isStableVersion for stable version should return true'
         );
 
-        $versionHandler = new \PublishPressBuilder\PluginVersionHandler();
+        $versionHandler = new PluginVersionHandler();
 
         $isStable = $versionHandler->isStableVersion($example[0]);
 
@@ -95,7 +98,7 @@ class PluginVersionHandlerCest
             'isStableVersion for unstable version should return false'
         );
 
-        $versionHandler = new \PublishPressBuilder\PluginVersionHandler();
+        $versionHandler = new PluginVersionHandler();
 
         $isStable = $versionHandler->isStableVersion($example[0]);
 
@@ -115,9 +118,9 @@ class PluginVersionHandlerCest
 
         copy($dummyFilePath, $tmpFile);
 
-        $handler = new \PublishPressBuilder\PluginVersionHandler();
+        $handler = new PluginVersionHandler();
 
-        $reflection = new ReflectionClass(\PublishPressBuilder\PluginVersionHandler::class);
+        $reflection = new ReflectionClass(PluginVersionHandler::class);
         $method     = $reflection->getMethod('replaceTextInFile');
         $method->setAccessible(true);
 
@@ -156,9 +159,9 @@ class PluginVersionHandlerCest
         mkdir($tmpDirPath, 0777, true);
         copy($dummyFilePath, $tmpFile);
 
-        $handler = new \PublishPressBuilder\PluginVersionHandler();
+        $handler = new PluginVersionHandler();
 
-        $reflection = new ReflectionClass(\PublishPressBuilder\PluginVersionHandler::class);
+        $reflection = new ReflectionClass(PluginVersionHandler::class);
         $method     = $reflection->getMethod('updateStableTagInTheReadmeFile');
         $method->setAccessible(true);
 
@@ -195,9 +198,9 @@ class PluginVersionHandlerCest
         mkdir($tmpDirPath);
         copy($dummyFilePath, $tmpFile);
 
-        $handler = new \PublishPressBuilder\PluginVersionHandler();
+        $handler = new PluginVersionHandler();
 
-        $reflection = new ReflectionClass(\PublishPressBuilder\PluginVersionHandler::class);
+        $reflection = new ReflectionClass(PluginVersionHandler::class);
         $method     = $reflection->getMethod('updateVersionInThePluginFile');
         $method->setAccessible(true);
 
@@ -234,7 +237,7 @@ class PluginVersionHandlerCest
         mkdir($tmpDirPath);
         copy($dummyFilePath, $tmpFile);
 
-        $handler = new \PublishPressBuilder\PluginVersionHandler();
+        $handler = new PluginVersionHandler();
 
         $handler->updateVersionInACustomFile($tmpDirPath, 'defines.php', 'PUBLISHPRESS_DUMMY_VERSION', $example[0]);
 
@@ -262,13 +265,13 @@ class PluginVersionHandlerCest
         UnitTester $I,
         \Codeception\Example $example
     ) {
-        $tmpDirPath    = sys_get_temp_dir() . '/' . microtime(true);
+        $tmpDirPath = sys_get_temp_dir() . '/' . microtime(true);
 
         mkdir($tmpDirPath);
         copy(__DIR__ . '/../_data/composer-files/dist-version/composer.json', $tmpDirPath . '/composer.json');
         copy(__DIR__ . '/../_data/composer-files/dist-version/publishpress-dummy.php', $tmpDirPath . '/publishpress-dummy.php');
 
-        $handler = new \PublishPressBuilder\PluginVersionHandler();
+        $handler = new PluginVersionHandler();
 
         $handler->updateVersionInComposerDistUrl($tmpDirPath, $example[0]);
 

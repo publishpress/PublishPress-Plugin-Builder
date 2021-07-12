@@ -1,1 +1,37 @@
-{"name":"publishpress\/publishpress-dummy","type":"wordpress-plugin","license":"GPL-2.0-or-later","authors":[{"name":"PublishPress","email":"help@publishpress.com","homepage":"https:\/\/publishpress.com","role":"Developer"}],"config":{"preferred-install":"dist"},"minimum-stability":"stable","repositories":[{"type":"path","url":"..\/..\/..\/","options":{"symlink":false}}],"require":{"php":">=5.6.20"},"require-dev":{"consolidation\/robo":"^2.0","publishpress\/publishpress-plugin-builder":"*"},"dist":{"url":"https:\/\/github.com\/publishpress\/publishpress-dummy\/releases\/download\/v4.0.0-feature.142-testing\/publishpress-dummy-4.0.0-feature.142-testing.zip","type":"zip"}}
+{
+  "name": "publishpress/publishpress-dummy",
+  "type": "wordpress-plugin",
+  "license": "GPL-2.0-or-later",
+  "authors": [
+    {
+      "name": "PublishPress",
+      "email": "help@publishpress.com",
+      "homepage": "https://publishpress.com",
+      "role": "Developer"
+    }
+  ],
+  "config": {
+    "preferred-install": "dist"
+  },
+  "minimum-stability": "stable",
+  "repositories": [
+    {
+      "type": "path",
+      "url": "../../../",
+      "options": {
+        "symlink": false
+      }
+    }
+  ],
+  "require": {
+    "php": ">=5.6.20"
+  },
+  "require-dev": {
+    "consolidation/robo": "^2.0",
+    "publishpress/publishpress-plugin-builder": "*"
+  },
+  "dist": {
+    "url": "https://github.com/publishpress/publishpress-dummy/releases/download/v4.0.0-feature.142-testing/publishpress-dummy-4.0.0-feature.142-testing.zip",
+    "type": "zip"
+  }
+}
