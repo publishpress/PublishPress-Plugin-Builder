@@ -17,9 +17,9 @@
   },
   "require": {
     "php": "~7.3",
-    "consolidation/robo": "^2.0",
+    "consolidation/robo": "^3.0",
     "nelexa/zip": "^3.3",
-    "symfony/yaml": "^4"
+    "symfony/yaml": "^5"
   },
   "require-dev": {
     "codeception/codeception": "^4.0",
