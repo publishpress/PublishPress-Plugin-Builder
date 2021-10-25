@@ -116,7 +116,10 @@ abstract class PackageBuilderTasks extends Tasks
         $this->composerFileReader   = new ComposerFileReader();
         $this->pluginVersionHandler = new PluginVersionHandler();
 
-        $this->pluginName    = $this->composerFileReader->getPluginName($this->sourcePath);
+        $this->pluginName = $this->composerFileReader->getPluginName($this->sourcePath);
+
+        $this->checkRequiredFiles();
+
         $this->pluginVersion = $this->pluginVersionHandler->getPluginVersion(
             $this->sourcePath . '/' . $this->pluginName . '.php'
         );
@@ -149,6 +152,15 @@ abstract class PackageBuilderTasks extends Tasks
             $this->pluginName,
             $this->pluginVersion
         );
+    }
+
+    private function checkRequiredFiles()
+    {
+        if (! file_exists($this->sourcePath . '/' . $this->pluginName . '.php')) {
+            echo 'Sorry, required files were not found. Are you sure you are running the command from inside the plugin folder?';
+            echo "\n";
+            die;
+        }
     }
 
     /**
