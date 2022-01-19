@@ -25,7 +25,7 @@ namespace PublishPressBuilder;
 
 class ComposerFileReader implements ComposerFileReaderInterface
 {
-    public function getPluginName(string $projectPath): string
+    public function getStandardPluginName(string $projectPath): string
     {
         $composerFileJson = trim(file_get_contents($projectPath . '/composer.json'));
         $composerFileJson = json_decode($composerFileJson);

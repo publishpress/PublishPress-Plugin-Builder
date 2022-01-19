@@ -55,6 +55,22 @@ class PackageBuilderTasksCest
         );
     }
 
+    public function testBuildTaskWithCustomFilename_ShouldCreateAZipFileInTheDistDirNamedWithPluginNameAndVersion(IntegrationTester $I)
+    {
+        $I->wantToTest(
+            'the build task on plugin with custom filename, should create a ZIP file in the ./dist dir with the plugin name and version'
+        );
+
+        $sourcePath = __DIR__ . '/../_data/build-custom-filename';
+
+        $roboOutput = $this->callRoboCommand('build', realpath($sourcePath));
+
+        $I->assertFileExists(
+            $sourcePath . '/dist/publishpress-dummy-2.4.0.zip',
+            'There should be a ZIP file in the path ' . $sourcePath . ".\nRobo command output:\n" . $roboOutput
+        );
+    }
+
     public function testBuildTask_ShouldCreateZipFileWithNoIgnoredFiles(IntegrationTester $I)
     {
         $I->wantToTest('the build task with no custom destination, should create a ZIP file without any ignore file');
@@ -256,6 +272,28 @@ class PackageBuilderTasksCest
         $I->assertStringContainsString('Plugin Version: 2.4.0', $output);
     }
 
+    public function testVersionTask_WithNoArgumentInPluginCustomFilename_ShouldDisplayTheCurrentVersionNumber(IntegrationTester $I)
+    {
+        $I->wantToTest(
+            'the version task with no argument in a plugin with custom filename, should display the current version number only'
+        );
+
+        $tmpDirPath = __DIR__ . '/../_data/build-custom-filename/dist/publishpress-dummy';
+
+        if (!file_exists($tmpDirPath)) {
+            mkdir($tmpDirPath, 0777, true);
+        }
+
+        copy(__DIR__ . '/../_data/build-custom-filename/readme.txt', $tmpDirPath . '/readme.txt');
+        copy(__DIR__ . '/../_data/build-custom-filename/customPluginFile.php', $tmpDirPath . '/customPluginFile.php');
+        copy(__DIR__ . '/../_data/build-custom-filename/RoboFile.php', $tmpDirPath . '/RoboFile.php');
+        copy(__DIR__ . '/../_data/build-custom-filename/composer.json', $tmpDirPath . '/composer.json');
+
+        $output = $this->callRoboCommand('version', realpath($tmpDirPath), '../../../../../vendor/bin/robo');
+
+        $I->assertStringContainsString('Plugin Version: 2.4.0', $output);
+    }
+
     public function testVersionTask_WithArgument_ShouldDisplayTheNewVersionNumber(IntegrationTester $I)
     {
         $I->wantToTest(
@@ -272,6 +310,32 @@ class PackageBuilderTasksCest
         copy(__DIR__ . '/../_data/build-test/publishpress-dummy.php', $tmpDirPath . '/publishpress-dummy.php');
         copy(__DIR__ . '/../_data/build-test/RoboFile.php', $tmpDirPath . '/RoboFile.php');
         copy(__DIR__ . '/../_data/build-test/composer.json', $tmpDirPath . '/composer.json');
+
+        $output = $this->callRoboCommand(
+            'version 3.0.0-beta.1',
+            realpath($tmpDirPath),
+            '../../../../../vendor/bin/robo'
+        );
+
+        $I->assertStringContainsString('Updating plugin version to 3.0.0-beta.1', $output);
+    }
+
+    public function testVersionTask_WithArgumentOnCustomFilenamePlugin_ShouldDisplayTheNewVersionNumber(IntegrationTester $I)
+    {
+        $I->wantToTest(
+            'the version task with a new version as argument on a plugin with custom filename, should update the plugin version number in the plugin file'
+        );
+
+        $tmpDirPath = __DIR__ . '/../_data/build-custom-filename/dist/publishpress-dummy';
+
+        if (!file_exists($tmpDirPath)) {
+            mkdir($tmpDirPath, 0777, true);
+        }
+
+        copy(__DIR__ . '/../_data/build-custom-filename/readme.txt', $tmpDirPath . '/readme.txt');
+        copy(__DIR__ . '/../_data/build-custom-filename/customPluginFile.php', $tmpDirPath . '/customPluginFile.php');
+        copy(__DIR__ . '/../_data/build-custom-filename/RoboFile.php', $tmpDirPath . '/RoboFile.php');
+        copy(__DIR__ . '/../_data/build-custom-filename/composer.json', $tmpDirPath . '/composer.json');
 
         $output = $this->callRoboCommand(
             'version 3.0.0-beta.1',
@@ -302,6 +366,30 @@ class PackageBuilderTasksCest
         $this->callRoboCommand('version 3.0.0-beta.1', realpath($tmpDirPath), '../../../../../vendor/bin/robo');
 
         $pluginFileContents = file_get_contents($tmpDirPath . '/publishpress-dummy.php');
+
+        $I->assertStringContainsString('* Version: 3.0.0-beta.1', $pluginFileContents);
+    }
+
+    public function testVersionTask_WithUnstableVersionOnCustomFilename_ShouldUpdateTheVersionNumberInThePluginFile(IntegrationTester $I)
+    {
+        $I->wantToTest(
+            'the version task with a unstable version as argument on plugin with custom file name, should update the plugin version number in the plugin file'
+        );
+
+        $tmpDirPath = __DIR__ . '/../_data/build-custom-filename/dist/publishpress-dummy';
+
+        if (!file_exists($tmpDirPath)) {
+            mkdir($tmpDirPath, 0777, true);
+        }
+
+        copy(__DIR__ . '/../_data/build-custom-filename/readme.txt', $tmpDirPath . '/readme.txt');
+        copy(__DIR__ . '/../_data/build-custom-filename/customPluginFile.php', $tmpDirPath . '/customPluginFile.php');
+        copy(__DIR__ . '/../_data/build-custom-filename/RoboFile.php', $tmpDirPath . '/RoboFile.php');
+        copy(__DIR__ . '/../_data/build-custom-filename/composer.json', $tmpDirPath . '/composer.json');
+
+        $this->callRoboCommand('version 3.0.0-beta.1', realpath($tmpDirPath), '../../../../../vendor/bin/robo');
+
+        $pluginFileContents = file_get_contents($tmpDirPath . '/customPluginFile.php');
 
         $I->assertStringContainsString('* Version: 3.0.0-beta.1', $pluginFileContents);
     }
@@ -414,6 +502,51 @@ class PackageBuilderTasksCest
 
         $pluginFileContents = file_get_contents($tmpDirPath . '/defines.php');
 
+        $I->assertStringContainsString(
+            'define(\'PUBLISHPRESS_DUMMY_VERSION\', \'' . $example[0] . '\');',
+            $pluginFileContents
+        );
+    }
+
+    /**
+     * @example ["3.0.1"]
+     * @example ["3.3.1"]
+     * @example ["3.3.4-beta.1"]
+     * @example ["3.3.4-alpha.1"]
+     * @example ["4.0.0-rc.1"]
+     * @example ["4.0.0-feature.142-testing"]
+     */
+    public function testVersionTask_WithVersionNumberOnCustomFilename_ShouldUpdateTheVersionNumberInTheConstant(
+        IntegrationTester $I,
+        \Codeception\Example $example
+    ) {
+        $I->wantToTest(
+            'the version task with a stable version as argument on plugin with custom file name, should update the plugin version number 
+            in the plugin file'
+        );
+
+        $tmpDirPath = __DIR__ . '/../_data/build-custom-filename/dist/publishpress-dummy';
+
+        if (!file_exists($tmpDirPath)) {
+            mkdir($tmpDirPath, 0777, true);
+        }
+
+        copy(__DIR__ . '/../_data/build-custom-filename/readme.txt', $tmpDirPath . '/readme.txt');
+        copy(
+            __DIR__ . '/../_data/build-custom-filename/customPluginFile.php',
+            $tmpDirPath . '/customPluginFile.php'
+        );
+        copy(__DIR__ . '/../_data/build-custom-filename/RoboFile.php', $tmpDirPath . '/RoboFile.php');
+        copy(__DIR__ . '/../_data/build-custom-filename/composer.json', $tmpDirPath . '/composer.json');
+
+        $output = $this->callRoboCommand('version ' . $example[0], realpath($tmpDirPath), '../../../../../vendor/bin/robo');
+
+        $pluginFileContents = file_get_contents($tmpDirPath . '/customPluginFile.php');
+
+        $I->assertStringContainsString(
+            'Updated version number in the file customPluginFile.php',
+            $output
+        );
         $I->assertStringContainsString(
             'define(\'PUBLISHPRESS_DUMMY_VERSION\', \'' . $example[0] . '\');',
             $pluginFileContents

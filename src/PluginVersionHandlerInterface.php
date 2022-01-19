@@ -27,13 +27,11 @@ interface PluginVersionHandlerInterface
 {
     public function getPluginVersion(string $pluginFilePath): string;
 
-    public function setPluginVersion(string $pluginPath, string $pluginName, string $pluginVersion): void;
-
     public function isStableVersion(string $version): bool;
 
     public function updateStableTagInTheReadmeFile(string $pluginPath, string $version): void;
 
-    public function updateVersionInThePluginFile(string $pluginPath, string $pluginName, string $version): void;
+    public function updateVersionInThePluginFile(string $pluginPath, string $pluginFilename, string $version): void;
 
     public function updateVersionInACustomFile(
         string $pluginPath,
@@ -42,5 +40,5 @@ interface PluginVersionHandlerInterface
         string $version
     ): void;
 
-    public function updateVersionInComposerDistUrl(string $projectPath, string $version): void;
+    public function updateVersionInComposerDistUrl(string $projectPath, string $pluginFilename, string $version): void;
 }

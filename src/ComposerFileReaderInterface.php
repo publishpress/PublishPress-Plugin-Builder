@@ -25,5 +25,5 @@ namespace PublishPressBuilder;
 
 interface ComposerFileReaderInterface
 {
-    public function getPluginName(string $projectPath): string;
+    public function getStandardPluginName(string $projectPath): string;
 }

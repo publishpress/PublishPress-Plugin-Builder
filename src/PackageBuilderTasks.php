@@ -34,65 +34,31 @@ abstract class PackageBuilderTasks extends Tasks
 
     protected const TITLE_SEPARATOR = '######################################################################';
 
-    /**
-     * @var string
-     */
-    private $sourcePath;
+    private string $finalDestinationPath;
 
-    /**
-     * @var string
-     */
-    private $finalDestinationPath;
+    private string $distPath;
 
-    /**
-     * @var string
-     */
-    private $distPath;
+    private ComposerFileReaderInterface $composerFileReader;
 
-    /**
-     * @var ComposerFileReaderInterface
-     */
-    private $composerFileReader;
+    private PluginVersionHandlerInterface $pluginVersionHandler;
 
-    /**
-     * @var PluginVersionHandlerInterface
-     */
-    private $pluginVersionHandler;
+    private string $pluginName;
 
-    /**
-     * @var string
-     */
-    private $pluginName;
+    private string $pluginVersion;
 
-    /**
-     * @var string
-     */
-    private $pluginVersion;
+    private string $pluginFilename;
 
-    /**
-     * @var array
-     */
-    private $filesToIgnore = [];
+    private string $pluginFilePath = '';
 
-    /**
-     * @var Parser
-     */
-    private $yamlParser = null;
+    private array $filesToIgnore = [];
 
-    /**
-     * @var string
-     */
-    private $composerPath = 'composer';
+    private Parser $yamlParser;
 
-    /**
-     * @var string
-     */
-    private $versionConstantName = 'DUMMY_CONSTANT_NAME';
+    private string $composerPath = 'composer';
 
-    /**
-     * @var string[]
-     */
-    private $versionConstantFiles = ['defines.php', 'includes.php'];
+    private string $versionConstantName = 'DUMMY_CONSTANT_NAME';
+
+    private array $versionConstantFiles = ['defines.php', 'includes.php'];
 
     /**
      * PackageBuilderTasks constructor.
@@ -101,10 +67,11 @@ abstract class PackageBuilderTasks extends Tasks
      */
     public function __construct()
     {
-        $this->sourcePath = getcwd();
         $this->yamlParser = new Parser();
 
-        $this->distPath             = $this->sourcePath . '/' . self::DIST_DIR_NAME;
+        $sourcePath = $this->getSourcePath();
+
+        $this->distPath             = $sourcePath . '/' . self::DIST_DIR_NAME;
         $this->finalDestinationPath = $this->distPath;
         if ($this->settingsFileExists()) {
             $customSettings = $this->yamlParser->parseFile($this->getSettingsFilePath());
@@ -116,13 +83,37 @@ abstract class PackageBuilderTasks extends Tasks
         $this->composerFileReader   = new ComposerFileReader();
         $this->pluginVersionHandler = new PluginVersionHandler();
 
-        $this->pluginName = $this->composerFileReader->getPluginName($this->sourcePath);
+        $this->pluginName    = $this->composerFileReader->getStandardPluginName($sourcePath);
 
-        $this->checkRequiredFiles();
+        if (empty($this->pluginFilename)) {
+            $this->setPluginFilename($this->pluginName . '.php');
+        }
 
-        $this->pluginVersion = $this->pluginVersionHandler->getPluginVersion(
-            $this->sourcePath . '/' . $this->pluginName . '.php'
-        );
+        if (empty($this->pluginFilePath)) {
+            $this->setPluginFilePath($sourcePath . '/' . $this->pluginFilename);
+        }
+
+        $this->pluginVersion = $this->pluginVersionHandler->getPluginVersion($this->getPluginFilePath());
+    }
+
+    protected function getSourcePath(): string
+    {
+        return getcwd();
+    }
+
+    protected function getPluginFilePath(): string
+    {
+        return $this->pluginFilePath;
+    }
+
+    protected function setPluginFilePath(string $filePath): void
+    {
+        $this->pluginFilePath = $filePath;
+    }
+
+    protected function setPluginFilename(string $filename): void
+    {
+        $this->pluginFilename = $filename;
     }
 
     protected function setVersionConstantName(string $constantName): void
@@ -142,7 +133,7 @@ abstract class PackageBuilderTasks extends Tasks
 
     private function getSettingsFilePath(): string
     {
-        return $this->sourcePath . '/builder.yml';
+        return $this->getSourcePath() . '/builder.yml';
     }
 
     private function getZipFileName(): string
@@ -152,15 +143,6 @@ abstract class PackageBuilderTasks extends Tasks
             $this->pluginName,
             $this->pluginVersion
         );
-    }
-
-    private function checkRequiredFiles()
-    {
-        if (! file_exists($this->sourcePath . '/' . $this->pluginName . '.php')) {
-            echo 'Sorry, required files were not found. Are you sure you are running the command from inside the plugin folder?';
-            echo "\n";
-            die;
-        }
     }
 
     /**
@@ -194,7 +176,7 @@ abstract class PackageBuilderTasks extends Tasks
         $this->sayTitle();
 
         $this->prepareCleanDistDir($this->distPath, $this->pluginName);
-        $this->buildToDir($this->sourcePath, $this->distPath . '/' . $this->pluginName, $this->composerPath);
+        $this->buildToDir($this->getSourcePath(), $this->distPath . '/' . $this->pluginName, $this->composerPath);
     }
 
     /**
@@ -218,21 +200,29 @@ abstract class PackageBuilderTasks extends Tasks
         );
         $this->say('');
 
+        $sourcePath = $this->getSourcePath();
+
         if ($this->pluginVersionHandler->isStableVersion($newVersion)) {
-            $this->pluginVersionHandler->updateStableTagInTheReadmeFile($this->sourcePath, $newVersion);
+            $this->pluginVersionHandler->updateStableTagInTheReadmeFile($sourcePath, $newVersion);
             $this->say('Updated stable tag in the file readme.txt');
         }
 
-        $this->pluginVersionHandler->updateVersionInComposerDistUrl($this->sourcePath, $newVersion);
+        $this->pluginVersionHandler->updateVersionInComposerDistUrl($sourcePath, $this->pluginFilename, $newVersion);
         $this->say('Updated the dist url in the composer.json file');
 
-        $this->pluginVersionHandler->updateVersionInThePluginFile($this->sourcePath, $this->pluginName, $newVersion);
-        $this->say('Updated version number in the file ' . $this->pluginName);
+        $this->pluginVersionHandler->updateVersionInThePluginFile($sourcePath, $this->pluginFilename, $newVersion);
+        $this->pluginVersionHandler->updateVersionInACustomFile(
+            $sourcePath,
+            $this->pluginFilename,
+            $this->versionConstantName,
+            $newVersion
+        );
+        $this->say('Updated version number in the file ' . $this->pluginFilename);
 
         foreach ($this->versionConstantFiles as $fileName) {
-            if (file_exists($this->sourcePath . '/' . $fileName)) {
+            if (file_exists($sourcePath . '/' . $fileName)) {
                 $this->pluginVersionHandler->updateVersionInACustomFile(
-                    $this->sourcePath,
+                    $sourcePath,
                     $fileName,
                     $this->versionConstantName,
                     $newVersion

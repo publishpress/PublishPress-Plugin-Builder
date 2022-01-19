@@ -30,7 +30,7 @@ class ComposerFileReaderCest
         $projectPath = __DIR__ . '/../_data/composer-files/name-with-namespace';
 
         $utils      = new \PublishPressBuilder\ComposerFileReader();
-        $pluginName = $utils->getPluginName($projectPath);
+        $pluginName = $utils->getStandardPluginName($projectPath);
 
         $I->assertEquals('publishpress-dummy', $pluginName);
     }
@@ -43,7 +43,7 @@ class ComposerFileReaderCest
         $projectPath = __DIR__ . '/../_data/composer-files/name-with-no-namespace';
 
         $utils      = new \PublishPressBuilder\ComposerFileReader();
-        $pluginName = $utils->getPluginName($projectPath);
+        $pluginName = $utils->getStandardPluginName($projectPath);
 
         $I->assertEquals('publishpress-dummy', $pluginName);
     }

@@ -23,7 +23,7 @@
 
 namespace PublishPressBuilder;
 
-class PluginVersionHandler
+class PluginVersionHandler implements PluginVersionHandlerInterface
 {
     public function getPluginVersion(string $pluginFilePath): string
     {
@@ -49,10 +49,10 @@ class PluginVersionHandler
         );
     }
 
-    public function updateVersionInThePluginFile(string $pluginPath, string $pluginName, string $version): void
+    public function updateVersionInThePluginFile(string $pluginPath, string $pluginFilename, string $version): void
     {
         $this->replaceTextInFile(
-            $pluginPath . '/' . $pluginName . '.php',
+            $pluginPath . '/' . $pluginFilename,
             '/^(\s*\*\s*Version:\s*)([^\n]+)\n/m',
             ' * Version: ' . $version . "\n"
         );
@@ -84,15 +84,15 @@ class PluginVersionHandler
         file_put_contents($path, $fileContent);
     }
 
-    public function updateVersionInComposerDistUrl(string $projectPath, string $version): void
+    public function updateVersionInComposerDistUrl(string $projectPath, string $pluginFilename, string $version): void
     {
         $composerFileString = trim(file_get_contents($projectPath . '/composer.json'));
         $composerFileJson   = json_decode($composerFileString);
 
         if (isset($composerFileJson->dist) && isset($composerFileJson->dist->url)) {
             $utils         = new ComposerFileReader();
-            $pluginName    = $utils->getPluginName($projectPath);
-            $pluginVersion = $this->getPluginVersion($projectPath . '/' . $pluginName . '.php');
+            $pluginName    = $utils->getStandardPluginName($projectPath);
+            $pluginVersion = $this->getPluginVersion($projectPath . '/' . $pluginFilename);
 
             $composerFileString = str_replace(
                 $composerFileJson->dist->url,

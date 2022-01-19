@@ -31,3 +31,5 @@
  */
 
 define('PUBLISHPRESS_DUMMY_LOADED', 1);
+define('PUBLISHPRESS_DUMMY_VERSION', '2.4.0');
+define('DUMMY_CONSTANT_1', true);

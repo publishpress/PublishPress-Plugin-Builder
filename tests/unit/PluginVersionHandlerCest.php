@@ -206,7 +206,46 @@ class PluginVersionHandlerCest
 
         $newVersion = $example[0];
 
-        $method->invoke($handler, $tmpDirPath, 'publishpress-dummy', $newVersion);
+        $method->invoke($handler, $tmpDirPath, 'publishpress-dummy.php', $newVersion);
+
+        $tmpFileContent = file_get_contents($tmpFile);
+
+        $I->assertStringNotContainsString('* Version: 2.4.0', $tmpFileContent);
+        $I->assertStringContainsString('* Version: ' . $newVersion, $tmpFileContent);
+    }
+
+    /**
+     * @example ["3.4.0"]
+     * @example ["3.4.2"]
+     * @example ["3.14.2"]
+     * @example ["3.14.52"]
+     * @example ["13.14.5"]
+     * @example ["3.4.0-alpha.1"]
+     * @example ["3.4.0-beta.1"]
+     * @example ["3.54.0-beta.1"]
+     * @example ["3.54.0-rc.1"]
+     * @example ["3.54.0-rc.2"]
+     */
+    public function updateVersionInThePluginFileCustomFileName_ShouldUpdateTheVersionInThePluginFile(
+        UnitTester $I,
+        \Codeception\Example $example
+    ) {
+        $dummyFilePath = __DIR__ . '/../_data/build-custom-filename/customPluginFile.php';
+        $tmpDirPath    = sys_get_temp_dir() . '/' . microtime(true);
+        $tmpFile       = $tmpDirPath . '/customPluginFile.php';
+
+        mkdir($tmpDirPath);
+        copy($dummyFilePath, $tmpFile);
+
+        $handler = new PluginVersionHandler();
+
+        $reflection = new ReflectionClass(PluginVersionHandler::class);
+        $method     = $reflection->getMethod('updateVersionInThePluginFile');
+        $method->setAccessible(true);
+
+        $newVersion = $example[0];
+
+        $method->invoke($handler, $tmpDirPath, 'customPluginFile.php', $newVersion);
 
         $tmpFileContent = file_get_contents($tmpFile);
 
@@ -273,7 +312,7 @@ class PluginVersionHandlerCest
 
         $handler = new PluginVersionHandler();
 
-        $handler->updateVersionInComposerDistUrl($tmpDirPath, $example[0]);
+        $handler->updateVersionInComposerDistUrl($tmpDirPath, 'publishpress-dummy.php', $example[0]);
 
         $newVersion = $example[0];
 
