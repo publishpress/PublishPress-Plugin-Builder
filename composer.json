@@ -17,7 +17,7 @@
   },
   "require": {
     "php": "^7.3|^8.0",
-    "consolidation/robo": "^3.0",
+    "consolidation/robo": "^2.0",
     "nelexa/zip": "^3.3|^4.0",
     "symfony/yaml": "^5"
   },
